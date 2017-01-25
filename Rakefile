@@ -13,18 +13,6 @@ task 'test' => [:install] do
   Dir.glob(File.join("**", "test", "*.lua")).each do |t|
       sh "#{LUA} #{LUAFLAGS} #{t}"
   end
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/array_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/list_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/stack_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/queue_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/iterator_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/map_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/set_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/heap_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/vector_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/luastring_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/utf8string_test.lua"
-  # sh "#{LUA} #{LUAFLAGS} #{TEST_DIR}/bigint_test.lua"
 end
 
 task 'install' => [:doc] do
