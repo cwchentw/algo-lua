@@ -20,5 +20,6 @@ algo.Set = algo.Set or require "algo.Set"
 algo.Heap = algo.Heap or require "algo.Heap"
 algo.Vector = algo.Vector or require "algo.Vector"
 algo.String = algo.String or require "algo.String"
+algo.UTF8String = algo.UTF8String or require "algo.UTF8String"
 
 return algo

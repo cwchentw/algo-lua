@@ -43,6 +43,8 @@ build = {
     ["algo.Heap"] = "lib/algo/Heap.lua",
     ["algo.Vector"] = "lib/algo/Vector.lua",
     ["algo.String"] = "lib/algo/String.lua",
+    ["algo.LuaString"] = "lib/algo/LuaString.lua",
+    ["algo.UTF8String"] = "lib/algo/UTF8String.lua",
     ["algo.BigInt"] = "lib/algo/BigInt.lua"
   }
 }
