@@ -1,5 +1,5 @@
 --- `algo.String` class.
--- A factory class that generating specific string object under user's request.
+-- A factory class that generates specific string object under user's request.
 -- Currently, `algo.UTF8String` and `algo.LuaString` are implemented.
 -- @classmod String
 local UTF8String = require "algo.UTF8String"
@@ -16,9 +16,9 @@ end
 
 --- Create a string object.
 -- @param s a Lua string
--- @param options A hash-style table presents options, including:
+-- @param options Optional. A hash-style table presents options, including:
 --
--- * encoding: native, utf8, or nil
+-- * encoding: native, utf8, or nil.  Default to native, i.e. LuaString.
 --
 -- @return A string object.
 function String:new(s, options)
