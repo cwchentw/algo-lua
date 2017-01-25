@@ -41,6 +41,7 @@ build = {
     ["algo.Map"] = "lib/algo/Map.lua",
     ["algo.Set"] = "lib/algo/Set.lua",
     ["algo.Heap"] = "lib/algo/Heap.lua",
+    ["algo.NaiveBSTree"] = "lib/algo/NaiveBSTree.lua",
     ["algo.Vector"] = "lib/algo/Vector.lua",
     ["algo.String"] = "lib/algo/String.lua",
     ["algo.LuaString"] = "lib/algo/LuaString.lua",
