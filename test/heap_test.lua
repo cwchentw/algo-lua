@@ -29,7 +29,7 @@ end
 -- Use algo.Heap as a maximal priority queue
 do
   -- MaxHeap
-  local heap = Heap:from_table(function (a, b) return a > b end, {1, 2, 3, 4})
+  local heap = Heap:from_table({1, 2, 3, 4}, function (a, b) return a > b end)
 
   -- MaxHeap: 4 <- 3 <- 2 <- 1
   assert(heap:peek() == 4)

@@ -45,23 +45,16 @@ function Heap:new(func)
 end
 
 --- Create a heap with an array-style table.
--- @param func Optional, function (a, b) -> bool. See `new` method for the detail.
 -- @param table an array-style table
+-- @param func Optional, function (a, b) -> bool. See `new` method for the detail.
 -- @return A heap with elements in the table.
-function Heap:from_table(func, table)
-  local _func
-  local _table
-
-  if type(func) == "table" then  -- func is a table
-    _func = function (a, b) return a < b end
-    _table = func
-  else
-    _func = func
-    _table = table
+function Heap:from_table(table, func)
+  if func == nil then
+    func = function (a, b) return a < b end
   end
 
-  local heap = Heap:new(_func)
-  for _, v in pairs(_table) do
+  local heap = Heap:new(func)
+  for _, v in pairs(table) do
     heap:push(v)
   end
   return heap
