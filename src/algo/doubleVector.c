@@ -54,7 +54,7 @@ char* utoa(size_t s) {
   return str;
 }
 
-void* double_vector_new(size_t s) {
+DoubleVector* double_vector_new(size_t s) {
   DoubleVector* vector = malloc(sizeof(DoubleVector));
   vector->size = s;
   vector->vec = malloc(vector->size * sizeof(double));
@@ -63,37 +63,37 @@ void* double_vector_new(size_t s) {
     vector->vec[i] = 0.0;
   }
 
-  return (void*) vector;
+  return vector;
 }
 
-size_t double_vector_size(void* v) {
-  return ((DoubleVector*) v)->size;
+size_t double_vector_size(DoubleVector* v) {
+  return v->size;
 }
 
-double double_vector_get(void* v, size_t index) {
-  if (index > ((DoubleVector*) v)->size - 1) {
+double double_vector_get(DoubleVector* v, size_t index) {
+  if (index > v->size - 1) {
     double_vector_error(v, "Index out of range\n");
   }
 
-  return ((DoubleVector*) v)->vec[index];
+  return v->vec[index];
 }
 
-void double_vector_set(void* v, size_t index, double data) {
-  if (index > ((DoubleVector*) v)->size - 1) {
+void double_vector_set(DoubleVector* v, size_t index, double data) {
+  if (index > v->size - 1) {
     double_vector_error(v, "Index out of range\n");
   }
 
-  ((DoubleVector*) v)->vec[index] = data;
+  v->vec[index] = data;
 }
 
-int double_vector_equal(void* v1, void* v2) {
-  if (((DoubleVector*) v1)->size != ((DoubleVector*) v2)->size) {
+int double_vector_equal(DoubleVector* v1, DoubleVector* v2) {
+  if (v1->size != v2->size) {
     return 0;
   }
 
-  size_t len = ((DoubleVector*) v1)->size;
+  size_t len = v1->size;
   for (int i = 0; i < len; i++) {
-    if (((DoubleVector*) v1)->vec[i] != ((DoubleVector*) v2)->vec[i]) {
+    if (v1->vec[i] != v2->vec[i]) {
       return 0;
     }
   }
@@ -101,13 +101,13 @@ int double_vector_equal(void* v1, void* v2) {
   return 1;
 }
 
-void double_vector_error(void* v, const char* msg) {
+void double_vector_error(DoubleVector* v, const char* msg) {
   fprintf(stderr, "%s", msg);
   double_vector_free(v);
   exit(EXIT_FAILURE);
 }
 
-void double_vector_free(void* v) {
+void double_vector_free(DoubleVector* v) {
   free((void*) ((DoubleVector*) v)->vec);
   free((void*) v);
 }

@@ -16,13 +16,13 @@ extern "C" {
     double* vec;
   } DoubleVector;
 
-  void* double_vector_new(size_t);
-  size_t double_vector_size(void*);
-  double double_vector_get(void*, size_t);
-  void double_vector_set(void*, size_t, double);
-  int double_vector_equal(void*, void*);
-  void double_vector_error(void*, const char*);
-  void double_vector_free(void*);
+  DoubleVector* double_vector_new(size_t);
+  size_t double_vector_size(DoubleVector*);
+  double double_vector_get(DoubleVector*, size_t);
+  void double_vector_set(DoubleVector*, size_t, double);
+  int double_vector_equal(DoubleVector*, DoubleVector*);
+  void double_vector_error(DoubleVector*, const char*);
+  void double_vector_free(DoubleVector*);
 
   char* utoa(size_t);
 

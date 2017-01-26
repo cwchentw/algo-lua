@@ -98,6 +98,14 @@ DoubleVector.__eq = function (v1, v2)
   end
 end
 
+-- Create a double vector from raw vector.
+local function _vector_from_raw(v)
+  local vector = DoubleVector:new(0)
+  cvector.double_vector_free(vector.vec)
+  vector.vec = v
+  return vector
+end
+
 --- Create a double vector.
 -- @param size the size of the vector
 -- @return A vector.
