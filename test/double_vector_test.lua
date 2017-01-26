@@ -1,28 +1,30 @@
 local Vector = require "algo.DoubleVector"
 
-local v = Vector:new(3)
-assert(v:len(), 3)
-assert(v[1] == 0)
-assert(v[2] == 0)
-assert(v[3] == 0)
+do
+  local v = Vector:new(3)
+  assert(v:len(), 3)
+  assert(v:get(1) == 0)
+  assert(v:get(2) == 0)
+  assert(v:get(3) == 0)
+end
 
 -- Create a vector from a table.
 do
-  v = Vector:from_table({1, 2, 3})
+  local v = Vector:from_table({1, 2, 3})
   assert(v:len(), 3)
-  assert(v[1] == 1)
-  assert(v[2] == 2)
-  assert(v[3] == 3)
+  assert(v:get(1) == 1)
+  assert(v:get(2) == 2)
+  assert(v:get(3) == 3)
 end
 
 -- Vector equality
 do
-  -- local v1 = Vector:from_table({1, 2, 3})
+  local v1 = Vector:from_table({1, 2, 3})
   local v2 = Vector:from_table({1, 2, 3})
   local v3 = Vector:from_table({2, 3, 4})
   local v4 = Vector:from_table({1, 2, 3, 4})
 
-  assert(v2 == v3)
+  assert(v1 == v2)
   assert(v1 ~= v3)
   assert(v1 ~= v4)
 end
@@ -85,4 +87,31 @@ do
 
   local v3 = 3 * v1
   assert(v3 == Vector:from_table({3, 6, 9}))
+end
+
+-- Vector division.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+  local v2 = Vector:from_table({2, 3, 4})
+
+  local v = v1 / v2
+
+  assert(math.abs(v:get(1) - 0.5) < 1e-6)
+  assert(math.abs(v:get(2) - 0.666666) < 1e-6)
+  assert(math.abs(v:get(3) - 0.75) < 1e-6)
+end
+
+-- Vector scalar division.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+
+  local v2 = v1 / 3
+  assert(math.abs(v2:get(1) - 0.333333) < 1e-6)
+  assert(math.abs(v2:get(2) - 0.666666) < 1e-6)
+  assert(math.abs(v2:get(3) - 1) < 1e-6)
+
+  local v3 = 3 / v1
+  assert(math.abs(v3:get(1) - 3) < 1e-6)
+  assert(math.abs(v3:get(2) - 1.5) < 1e-6)
+  assert(math.abs(v3:get(3) - 1) < 1e-6)
 end

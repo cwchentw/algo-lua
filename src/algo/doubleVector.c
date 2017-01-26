@@ -87,13 +87,13 @@ void double_vector_set(DoubleVector* v, size_t index, double data) {
 }
 
 int double_vector_equal(DoubleVector* v1, DoubleVector* v2) {
-  if (v1->size != v2->size) {
+  if (!(v1->size == v2->size)) {
     return 0;
   }
 
   size_t len = v1->size;
   for (int i = 0; i < len; i++) {
-    if (v1->vec[i] != v2->vec[i]) {
+    if (!(v1->vec[i] == v2->vec[i])) {
       return 0;
     }
   }
@@ -138,7 +138,7 @@ DoubleVector* double_vector_sub(DoubleVector* v1, DoubleVector* v2) {
     return NULL;
   }
 
-  DoubleVector*v = double_vector_new(len1);
+  DoubleVector* v = double_vector_new(len1);
 
   for (int i = 0; i < len1; i++) {
     double_vector_set(v, i,
@@ -148,7 +148,20 @@ DoubleVector* double_vector_sub(DoubleVector* v1, DoubleVector* v2) {
   return v;
 }
 
-DoubleVector* double_vector_scalar_sub(DoubleVector* v1, double s) {
+DoubleVector* double_vector_scalar_sub_first(double s, DoubleVector* v1) {
+  size_t len = v1->size;
+
+  DoubleVector* v = double_vector_new(len);
+
+  for (int i = 0; i < len; i++) {
+    double_vector_set(v, i,
+      s - double_vector_get(v1, i));
+  }
+
+  return v;
+}
+
+DoubleVector* double_vector_scalar_sub_second(DoubleVector* v1, double s) {
   size_t len = v1->size;
 
   DoubleVector* v = double_vector_new(len);
@@ -168,7 +181,7 @@ DoubleVector* double_vector_mul(DoubleVector* v1, DoubleVector* v2) {
     return NULL;
   }
 
-  DoubleVector*v = double_vector_new(len1);
+  DoubleVector* v = double_vector_new(len1);
 
   for (int i = 0; i < len1; i++) {
     double_vector_set(v, i,
@@ -186,6 +199,49 @@ DoubleVector* double_vector_scalar_mul(DoubleVector* v1, double s) {
   for (int i = 0; i < len; i++) {
     double_vector_set(v, i,
       double_vector_get(v1, i) * s);
+  }
+
+  return v;
+}
+
+DoubleVector* double_vector_div(DoubleVector* v1, DoubleVector* v2) {
+  size_t len1 = v1->size;
+  size_t len2 = v2->size;
+  if (len1 != len2) {
+    return NULL;
+  }
+
+  DoubleVector* v = double_vector_new(len1);
+
+  for (int i = 0; i < len1; i++) {
+    double_vector_set(v, i,
+      double_vector_get(v1, i) / double_vector_get(v2, i));
+  }
+
+  return v;
+}
+
+DoubleVector* double_vector_scalar_div_first(double s, DoubleVector* v1) {
+  size_t len = v1->size;
+
+  DoubleVector* v = double_vector_new(len);
+
+  for (int i = 0; i < len; i++) {
+    double_vector_set(v, i,
+      s / double_vector_get(v1, i));
+  }
+
+  return v;
+}
+
+DoubleVector* double_vector_scalar_div_second(DoubleVector* v1, double s) {
+  size_t len = v1->size;
+
+  DoubleVector* v = double_vector_new(len);
+
+  for (int i = 0; i < len; i++) {
+    double_vector_set(v, i,
+      double_vector_get(v1, i) / s);
   }
 
   return v;

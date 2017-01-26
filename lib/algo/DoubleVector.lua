@@ -20,9 +20,13 @@ ffi.cdef([[
   DoubleVector* double_vector_add(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_add(DoubleVector*, double);
   DoubleVector* double_vector_sub(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_scalar_sub(DoubleVector*, double);
+  DoubleVector* double_vector_scalar_sub_first(double, DoubleVector*);
+  DoubleVector* double_vector_scalar_sub_second(DoubleVector*, double);
   DoubleVector* double_vector_mul(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_mul(DoubleVector*, double);
+  DoubleVector* double_vector_div(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_scalar_div_first(double, DoubleVector*);
+  DoubleVector* double_vector_scalar_div_second(DoubleVector*, double);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
   char* utoa(unsigned);
@@ -59,13 +63,17 @@ end
 local DoubleVector = {}
 package.loaded['DoubleVector'] = DoubleVector
 
+DoubleVector.__index = DoubleVector
+--[[
 --- Index the vector.
 -- Since using builtin indexing is sometimes tricky, use OOP method call `get`
 -- is preferred.
 DoubleVector.__index = function (t, k)
   if type(k) == "number" then
+    print("Get data from C")
     return cvector.double_vector_get(t.vec, k - 1)
   else
+    print("Get data from Lua")
     return rawget(DoubleVector, k)
   end
 end
@@ -80,7 +88,7 @@ DoubleVector.__newindex = function (t, k, v)
     rawset(DoubleVector, k, v)
   end
 end
-
+]]--
 --- Automatically called when the object is recycled.
 DoubleVector.__gc = function (o)
   cvector.double_vector_free(o)
@@ -146,10 +154,10 @@ DoubleVector.__sub = function (v1, v2)
   local raw = nil
   if type(v1) == "number" and type(v2) == "table" then
     assert(v2["get"] and v2["len"])
-    raw = cvector.double_vector_scalar_sub(v2.vec, v1)
+    raw = cvector.double_vector_scalar_sub_first(v1, v2.vec)
   elseif type(v1) == "table" and type(v2) == "number" then
     assert(v1["get"] and v1["len"])
-    raw = cvector.double_vector_scalar_sub(v1.vec, v2)
+    raw = cvector.double_vector_scalar_sub_second(v1.vec, v2)
   else
     assert(type(v1) == "table" and v1["get"] and v1["len"])
     assert(type(v2) == "table" and v2["get"] and v2["len"])
@@ -190,6 +198,32 @@ DoubleVector.__mul = function (v1, v2)
   return _vector_from_raw(raw)
 end
 
+--- Vector division.
+-- @param v1 vector or number
+-- @param v2 vector or number
+-- @return A new vector.
+DoubleVector.__div = function (v1, v2)
+  local raw = nil
+  if type(v1) == "number" and type(v2) == "table" then
+    assert(v2["get"] and v2["len"])
+    raw = cvector.double_vector_scalar_div_first(v1, v2.vec)
+  elseif type(v1) == "table" and type(v2) == "number" then
+    assert(v1["get"] and v1["len"])
+    raw = cvector.double_vector_scalar_div_second(v1.vec, v2)
+  else
+    assert(type(v1) == "table" and v1["get"] and v1["len"])
+    assert(type(v2) == "table" and v2["get"] and v2["len"])
+
+    local len1 = v1:len()
+    local len2 = v2:len()
+    assert(len1 == len2)
+
+    raw = cvector.double_vector_div(v1.vec, v2.vec)
+  end
+
+  return _vector_from_raw(raw)
+end
+
 --- Create a double vector.
 -- @param size the size of the vector
 -- @return A vector.
@@ -205,13 +239,13 @@ end
 -- @return A vector.
 function DoubleVector:from_table(t)
   local len = #t
-  local vec = DoubleVector:new(len)
+  local vector = DoubleVector:new(len)
 
   for i = 1, len do
-    vec:set(i, t[i])
+    vector:set(i, t[i])
   end
 
-  return vec
+  return vector
 end
 
 --- Index the vector.

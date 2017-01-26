@@ -24,9 +24,13 @@ extern "C" {
   DoubleVector* double_vector_add(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_add(DoubleVector*, double);
   DoubleVector* double_vector_sub(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_scalar_sub(DoubleVector*, double);
+  DoubleVector* double_vector_scalar_sub_first(double, DoubleVector*);
+  DoubleVector* double_vector_scalar_sub_second(DoubleVector*, double);
   DoubleVector* double_vector_mul(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_mul(DoubleVector*, double);
+  DoubleVector* double_vector_div(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_scalar_div_first(double, DoubleVector*);
+  DoubleVector* double_vector_scalar_div_second(DoubleVector*, double);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
 
