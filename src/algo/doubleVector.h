@@ -23,6 +23,8 @@ extern "C" {
   int double_vector_equal(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_add(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_add(DoubleVector*, double);
+  DoubleVector* double_vector_sub(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_scalar_sub(DoubleVector*, double);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
 
