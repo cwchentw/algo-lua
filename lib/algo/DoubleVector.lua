@@ -64,31 +64,7 @@ local DoubleVector = {}
 package.loaded['DoubleVector'] = DoubleVector
 
 DoubleVector.__index = DoubleVector
---[[
---- Index the vector.
--- Since using builtin indexing is sometimes tricky, use OOP method call `get`
--- is preferred.
-DoubleVector.__index = function (t, k)
-  if type(k) == "number" then
-    print("Get data from C")
-    return cvector.double_vector_get(t.vec, k - 1)
-  else
-    print("Get data from Lua")
-    return rawget(DoubleVector, k)
-  end
-end
 
---- Assign data to the indexed element.
--- Since using builting index assignment is sometimes tricky, use OOP method
--- call `set` is preferred.
-DoubleVector.__newindex = function (t, k, v)
-  if type(k) == "number" then
-    cvector.double_vector_set(t.vec, k - 1, v)
-  else
-    rawset(DoubleVector, k, v)
-  end
-end
-]]--
 --- Automatically called when the object is recycled.
 DoubleVector.__gc = function (o)
   cvector.double_vector_free(o)
