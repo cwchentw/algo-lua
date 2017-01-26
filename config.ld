@@ -11,6 +11,7 @@ file = {
   "lib/algo/Heap.lua",
   "lib/algo/NaiveBSTree.lua",
   "lib/algo/Vector.lua",
+  "lib/algo/DoubleVector.lua",
   "lib/algo/String.lua",
   "lib/algo/LuaString.lua",
   "lib/algo/UTF8String.lua",
