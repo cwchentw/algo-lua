@@ -26,3 +26,23 @@ do
   assert(v1 ~= v3)
   assert(v1 ~= v4)
 end
+
+-- Vector addition
+do
+  local v1 = Vector:from_table({1, 2, 3})
+  local v2 = Vector:from_table({2, 3, 4})
+
+  local v = v1 + v2
+  assert(v == Vector:from_table({3, 5, 7}))
+end
+
+-- Vector scalar addition
+do
+  local v1 = Vector:from_table({1, 2, 3})
+
+  local v2 = v1 + 3
+  assert(v2 == Vector:from_table({4, 5, 6}))
+
+  local v3 = 3 + v1
+  assert(v3 == Vector:from_table({4, 5, 6}))
+end

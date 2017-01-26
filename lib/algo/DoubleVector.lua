@@ -12,13 +12,15 @@ ffi.cdef([[
   double* vec;
   } DoubleVector;
 
-  void* double_vector_new(unsigned);
-  unsigned double_vector_size(void*);
-  double double_vector_get(void*, size_t);
-  void double_vector_set(void*, unsigned, double);
-  int double_vector_equal(void*, void*);
-  void double_vector_error(void*, const char*);
-  void double_vector_free(void*);
+  DoubleVector* double_vector_new(size_t);
+  size_t double_vector_size(DoubleVector*);
+  double double_vector_get(DoubleVector*, size_t);
+  void double_vector_set(DoubleVector*, size_t, double);
+  int double_vector_equal(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_add(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_scalar_add(DoubleVector*, double);
+  void double_vector_error(DoubleVector*, const char*);
+  void double_vector_free(DoubleVector*);
   char* utoa(unsigned);
   ]])
 
@@ -104,6 +106,28 @@ local function _vector_from_raw(v)
   cvector.double_vector_free(vector.vec)
   vector.vec = v
   return vector
+end
+
+DoubleVector.__add = function (v1, v2)
+  local raw = nil
+  if type(v1) == "number" and type(v2) == "table" then
+    assert(v2["get"] and v2["len"])
+    raw = cvector.double_vector_scalar_add(v2.vec, v1)
+  elseif type(v1) == "table" and type(v2) == "number" then
+    assert(v1["get"] and v1["len"])
+    raw = cvector.double_vector_scalar_add(v1.vec, v2)
+  else
+    assert(type(v1) == "table" and v1["get"] and v1["len"])
+    assert(type(v2) == "table" and v2["get"] and v2["len"])
+
+    local len1 = v1:len()
+    local len2 = v2:len()
+    assert(len1 == len2)
+
+    raw = cvector.double_vector_add(v1.vec, v2.vec)
+  end
+
+  return _vector_from_raw(raw)
 end
 
 --- Create a double vector.
