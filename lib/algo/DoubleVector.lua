@@ -21,6 +21,8 @@ ffi.cdef([[
   DoubleVector* double_vector_scalar_add(DoubleVector*, double);
   DoubleVector* double_vector_sub(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_sub(DoubleVector*, double);
+  DoubleVector* double_vector_mul(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_scalar_mul(DoubleVector*, double);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
   char* utoa(unsigned);
@@ -157,6 +159,32 @@ DoubleVector.__sub = function (v1, v2)
     assert(len1 == len2)
 
     raw = cvector.double_vector_sub(v1.vec, v2.vec)
+  end
+
+  return _vector_from_raw(raw)
+end
+
+--- Vector multiplication.
+-- @param v1 vector or number
+-- @param v2 vector or number
+-- @return A new vector.
+DoubleVector.__mul = function (v1, v2)
+  local raw = nil
+  if type(v1) == "number" and type(v2) == "table" then
+    assert(v2["get"] and v2["len"])
+    raw = cvector.double_vector_scalar_mul(v2.vec, v1)
+  elseif type(v1) == "table" and type(v2) == "number" then
+    assert(v1["get"] and v1["len"])
+    raw = cvector.double_vector_scalar_mul(v1.vec, v2)
+  else
+    assert(type(v1) == "table" and v1["get"] and v1["len"])
+    assert(type(v2) == "table" and v2["get"] and v2["len"])
+
+    local len1 = v1:len()
+    local len2 = v2:len()
+    assert(len1 == len2)
+
+    raw = cvector.double_vector_mul(v1.vec, v2.vec)
   end
 
   return _vector_from_raw(raw)

@@ -66,3 +66,23 @@ do
   local v3 = 3 - v1
   assert(v3 == Vector:from_table({2, 1, 0}))
 end
+
+-- Vector multiplication.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+  local v2 = Vector:from_table({2, 3, 4})
+
+  local v = v1 * v2
+  assert(v == Vector:from_table({2, 6, 12}))
+end
+
+-- Vector scalar multiplication.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+
+  local v2 = v1 * 3
+  assert(v2 == Vector:from_table({3, 6, 9}))
+
+  local v3 = 3 * v1
+  assert(v3 == Vector:from_table({3, 6, 9}))
+end
