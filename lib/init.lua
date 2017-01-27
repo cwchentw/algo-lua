@@ -20,6 +20,8 @@ algo.Set = algo.Set or require "algo.Set"
 algo.Heap = algo.Heap or require "algo.Heap"
 algo.NaiveBSTree = algo.NaiveBSTree or require "algo.NaiveBSTree"
 algo.Vector = algo.Vector or require "algo.Vector"
+algo.DoubleVector = algo.DoubleVector or require "algo.DoubleVector"
+algo.LuaVector = algo.LuaVector or require "algo.LuaVector"
 algo.String = algo.String or require "algo.String"
 algo.UTF8String = algo.UTF8String or require "algo.UTF8String"
 

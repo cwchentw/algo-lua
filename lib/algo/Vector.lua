@@ -1,240 +1,102 @@
 --- `algo.Vector` class.
--- A high dimensional vector which presents Euclidean vectors, including
--- vector algebra and some statistics.
+-- A factory class that generates specific vector object under user's request.
+-- Currently, `algo.DoubleVector` and `algo.LuaVector` are implemented.
 -- @classmod Vector
-local Array = require "algo.Array"
-local Set = require "algo.Set"
+local DoubleVector = require "algo.DoubleVector"
+local LuaVector = require "algo.LuaVector"
+
 local Vector = {}
-package.loaded['algo.Vector'] = Vector
+package.loaded['Vector'] = Vector
 
---- Index the vector.
--- Since using builtin indexing is sometimes tricky, use OOP method call `get`
--- is preferred.
-Vector.__index = function (t, k)
-  if type(k) == "number" then
-    return t.array:get(k)
+Vector.__index = Vector
+
+local function _check_type(e)
+  assert(e == "native" or e == "number" or e == nil)
+end
+
+local function _get_type(options)
+  local _type = nil
+
+  if type(options) == "table" then
+    _type = options["type"]
+  end
+  _check_type(_type)
+
+  if _type == nil then
+    _type = "native"
+  end
+
+  return _type
+end
+
+local function _infer_type(t)
+  local n = #t
+  if n > 10 then
+    n = 10
+  end
+
+  local is_number = true
+  for i = 1, n do
+    if type(t[i]) ~= "number" then
+      is_number = false
+      break
+    end
+  end
+
+  local _type = nil
+  if is_number then
+    _type = "number"
   else
-    return rawget(Vector, k)
-  end
-end
-
---- Assign data to the indexed element.
--- Since using builting index assignment is sometimes tricky, use OOP method
--- call `set` is preferred.
-Vector.__newindex = function (t, k, v)
-  if type(k) == "number" then
-    t.array:set(k, v)
-  else
-    rawset(Vector, k, v)
-  end
-end
-
-Vector.__tostring = function (o)
-  local s = "("
-
-  for i = 1, o:len() do
-    s = s .. o:get(i)
-
-    if i < o:len() then
-      s = s .. ", "
-    end
+    _type = "native"
   end
 
-  s = s .. ")"
-
-  return s
-end
-
---- Check whether two vectors are equal.
-Vector.__eq = function (v1, v2)
-  if type(v1) ~= type(v2) then
-    return false
-  end
-
-  assert(type(v1) == "table" and v1["get"] and v1["len"])
-  assert(type(v2) == "table" and v2["get"] and v2["len"])
-
-  local len = v1:len()
-  if len ~= v2:len() then
-    return false
-  end
-
-  for i = 1, len do
-    if v1:get(1) ~= v2:get(1) then
-      return false
-    end
-  end
-
-  return true
-end
-
---- Vector addition.
--- Operator overloading on `+`. If one parameter is number,
--- the function will perform scalar addition on vector; otherwise,
--- vector addition.
--- @param a number or vector
--- @param b number or vector
--- @return a new vector
-Vector.__add = function(a, b)
-  local function _scalar_add(s, v0)
-    local v = Vector:new(v0:len())
-    for i = 1, #v0 do
-      v:set(i, v0:get(i) + s)
-    end
-    return v
-  end
-
-  if type(a) == "number" then
-    return _scalar_add(a, b)
-  end
-
-  if type(b) == "number" then
-    return _scalar_add(b, a)
-  end
-
-  assert(a:len() == b:len())
-  local v = Vector:new(a:len())
-  for i = 1, a:len() do
-    v:set(i, a:get(i) + b:get(i))
-  end
-  return v
-end
-
---- Vector substration.
--- Operator overloading on `-`. If one parameter is number,
--- the function will perform scalar substration on vector; otherwise,
--- vector substration.
--- @param a number or vector
--- @param b number or vector
--- @return a new vector
-Vector.__sub = function(a, b)
-  local function _scalar_sub(s, v0)
-    local v = Vector:new(v0:len())
-    for i = 1, #v0 do
-      v:set(i, v0:get(i) - s)
-    end
-    return v
-  end
-
-  if type(a) == "number" then
-    return _scalar_sub(a, b)
-  end
-
-  if type(b) == "number" then
-    return _scalar_sub(b, a)
-  end
-
-  assert(a:len() == b:len())
-  local v = Vector:new(a:len())
-  for i = 1, a:len() do
-    v:set(i, a:get(i) - b:get(i))
-  end
-  return v
-end
-
---- Vector element-wise multiplication.
--- Operator overloading on `*`. If one parameter is number,
--- the function will perform scalar multiplication on vector; otherwise,
--- vector element-wise multiplication.
--- @param a number or vector
--- @param b number or vector
--- @return a new vector
-Vector.__mul = function (a, b)
-  local function __scalar_mul(s, v0)
-    local v = Vector:new(v0:len())
-    for i = 1, v0:len() do
-      v:set(i, v0:get(i) * s)
-    end
-    return v
-  end
-
-  if type(a) == "number" then
-    return __scalar_mul(a, b)
-  end
-
-  if type(b) == "number" then
-    return __scalar_mul(b, a)
-  end
-
-  assert(a:len() == b:len())
-  local v = Vector:new(a:len())
-  for i = 1, a:len() do
-    v:set(i, a:get(i) * b:get(i))
-  end
-  return v
-end
-
---- Vector element-wise division.
--- Operator overloading on `/`. If one parameter is number,
--- the function will perform scalar division on vector; otherwise,
--- vector element-wise division.
--- @param a number or vector
--- @param b number or vector
--- @return a new vector
-Vector.__div = function (a, b)
-  local function __scalar_div(s, v0)
-    local v = Vector:new(v0:len())
-    for i = 1, v0:len() do
-      v:set(i, v0:get(i) / s)
-    end
-    return v
-  end
-
-  if type(a) == "number" then
-    return __scalar_div(a, b)
-  end
-
-  if type(b) == "number" then
-    return __scalar_div(b, a)
-  end
-
-  assert(a:len() == b:len())
-  local v = Vector:new(a:len())
-  for i = 1, a:len() do
-    v:set(i, a:get(i) / b:get(i))
-  end
-  return v
+  return _type
 end
 
 --- Create an empty vector.
--- @param size the size of the vector
--- @return an empty vector with specific size
-function Vector:new(size)
-  self = {}
-  self.array = Array:new(size)
-  setmetatable(self, Vector)
-  return self
-end
+-- @param size size
+-- @param options Optional. A hash-style table presents options, including:
+--
+-- * type: native or number.  Default to native, i.e. LuaVector.
+--
+-- @return A vector.
+function Vector:new(size, options)
+  local _type = _get_type(options)
 
---- Create a vector from an array-style table.
--- @param t an array-style table
--- @return A vector with the elements in the table.
-function Vector:from_table(t)
-  local v = Vector:new(#t)
-  for i = 1, #t do
-    v:set(i, t[i])
+  if _type == "number" then
+    return DoubleVector:new(size)
+  elseif _type == "native" then
+    return LuaVector:new(size)
+  else
+    return nil
   end
-  return v
 end
 
---- Index the vector.
--- @param i the index
--- @return The element.
-function Vector:get(i)
-  return self.array:get(i)
-end
+--- Create an vector with the elements from an array-style table.
+-- @param table an array-style table
+-- @param options Optional. A hash-style table presents options, including:
+--
+-- * type: native or number.  Default to native, i.e. LuaVector.
+--
+-- If no option supplied, the method will infer proper vector type by the
+-- elements in the table.
+-- @return A vector.
+function Vector:from_table(table, options)
+  local _type = nil
 
---- Assign an element by indexing the vector.
--- @param i the index
--- @param e the element
-function Vector:set(i, e)
-  self.array:set(i, e)
-end
+  if type(options) == "table" then
+    _type = _get_type(options)
+  else
+    _type = _infer_type(table)
+  end
 
---- The length of the vector.
--- @return The length of the vector.
-function Vector:len()
-  return self.array:len()
+  if _type == "number" then
+    return DoubleVector:from_table(table)
+  elseif _type == "native" then
+    return LuaVector:from_table(table)
+  else
+    return nil
+  end
 end
 
 return Vector

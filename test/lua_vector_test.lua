@@ -1,4 +1,4 @@
-local Vector = require "algo.LuaVector"
+local Vector = require "algo.Vector"
 
 do
   local v = Vector:new(3)
