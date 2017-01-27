@@ -16,6 +16,8 @@ typedef struct DoubleMatrix {
 DoubleMatrix* double_matrix_new(size_t, size_t);
 double double_matrix_get_row(DoubleMatrix*);
 double double_matrix_get_col(DoubleMatrix*);
+double double_matrix_get(DoubleMatrix*, size_t, size_t);
+void double_matrix_set(DoubleMatrix*, size_t, size_t, double);
 void double_matrix_free(DoubleMatrix*);
 ]])
 
@@ -56,4 +58,33 @@ function DoubleMatrix:col()
   return cmatrix.double_matrix_get_col(self.mtx)
 end
 
+--- Index matrix by (row, col) pair
+-- @param row Row, 1-based number
+-- @param col Column, 1-based number
+-- @return Data (number).
+function DoubleMatrix:get(row, col)
+  local nrow = self:row()
+  assert(1 <= row and row <= nrow)
+
+  local ncol = self:col()
+  assert(1 <= col and col <= ncol)
+
+  return cmatrix.double_matrix_get(self.mtx, row, col)
+end
+
+--- Assign data to the matrix by (row, col) pair.
+-- @param row, Row, 1-based number
+-- @param col, Column, 1-based number
+-- @param data, Data (number)
+function DoubleMatrix:set(row, col, data)
+  local nrow = self:row()
+  assert(1 <= row and row <= nrow)
+
+  local ncol = self:col()
+  assert(1 <= col and col <= ncol)
+
+  assert(type(data) == "number")
+
+  cmatrix.double_matrix_set(self.mtx, row, col, data)
+end
 return DoubleMatrix

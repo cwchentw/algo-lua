@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "doubleMatrix.h"
 
 DoubleMatrix* double_matrix_new(size_t nrow, size_t ncol) {
@@ -22,6 +23,34 @@ double double_matrix_get_row(DoubleMatrix* m) {
 
 double double_matrix_get_col(DoubleMatrix* m) {
   return m->ncol;
+}
+
+double double_matrix_get(DoubleMatrix* m, size_t row, size_t col) {
+  if (row > m->nrow) {
+    fprintf(stderr, "Index of row out of size, invalid data\n");
+    return 0.0;
+  }
+
+  if (col > m->ncol) {
+    fprintf(stderr, "Index of row out of size, invalid data\n");
+    return 0.0;
+  }
+
+  return m->mtx[(row - 1) + m->nrow * (col - 1)];
+}
+
+void double_matrix_set(DoubleMatrix* m, size_t row, size_t col, double data) {
+  if (row > m->nrow) {
+    fprintf(stderr, "Index of row out of size, invalid operation\n");
+    return;
+  }
+
+  if (col > m->ncol) {
+    fprintf(stderr, "Index of row out of size, invalid operation\n");
+    return;
+  }
+
+  m->mtx[(row - 1) + m->nrow * (col - 1)] = data;
 }
 
 void double_matrix_free(DoubleMatrix* m) {
