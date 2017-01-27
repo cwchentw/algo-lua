@@ -1,4 +1,5 @@
 local Vector = require "algo.DoubleVector"
+local LuaVector = require "algo.LuaVector"
 
 do
   local v = Vector:new(3)
@@ -141,4 +142,22 @@ do
   assert(math.abs(v3:get(1) - 3) < 1e-6)
   assert(math.abs(v3:get(2) - 9) < 1e-6)
   assert(math.abs(v3:get(3) - 27) < 1e-6)
+end
+
+-- Vector dot operation.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+  local v2 = Vector:from_table({2, 3, 4})
+
+  local result = v1:dot(v2)
+  assert(result == (1 * 2 + 2 * 3 + 3 * 4))
+end
+
+-- Vector dot operation on different vector class.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+  local v2 = LuaVector:from_table({2, 3, 4})
+
+  local result = v1:dot(v2)
+  assert(result == (1 * 2 + 2 * 3 + 3 * 4))
 end

@@ -30,6 +30,7 @@ ffi.cdef([[
   DoubleVector* double_vector_pow(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_pow_first(double, DoubleVector*);
   DoubleVector* double_vector_scalar_pow_second(DoubleVector*, double);
+  double double_vector_dot(DoubleVector*, DoubleVector*);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
   char* utoa(unsigned);
@@ -271,6 +272,27 @@ end
 -- @return Length.
 function DoubleVector:len()
   return tonumber(cvector.double_vector_size(self.vec))
+end
+
+--- Dot operation on two vectors
+-- @param v a vector
+-- @return The result
+function DoubleVector:dot(v)
+  assert(type(v) == "table" and v["get"] and v["len"])
+  local len1 = self:len()
+  local len2 = v:len()
+  assert(len1 == len2)
+
+  if type(v.vec) == "cdata" then
+    return cvector.double_vector_dot(self.vec, v.vec)
+  end
+
+  local result = 0
+  for i = 1, len1 do
+    result = result + self:get(i) * v:get(i)
+  end
+
+  return result
 end
 
 return DoubleVector

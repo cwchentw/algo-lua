@@ -291,6 +291,22 @@ DoubleVector* double_vector_scalar_pow_second(DoubleVector* v1, double s) {
   return v;
 }
 
+double double_vector_dot(DoubleVector* v1, DoubleVector* v2) {
+  size_t len1 = v1->size;
+  size_t len2 = v2->size;
+  if (len1 != len2) {
+    fprintf(stderr, "Unequal vector size, invalid result\n");
+    return 0.0;
+  }
+
+  double sum = 0.0;
+  for (int i = 0; i < len1; i++) {
+    sum += v1->vec[i] * v2->vec[i];
+  }
+
+  return sum;
+}
+
 void double_vector_error(DoubleVector* v, const char* msg) {
   fprintf(stderr, "%s", msg);
   double_vector_free(v);

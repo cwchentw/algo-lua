@@ -34,6 +34,7 @@ extern "C" {
   DoubleVector* double_vector_pow(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_pow_first(double, DoubleVector*);
   DoubleVector* double_vector_scalar_pow_second(DoubleVector*, double);
+  double double_vector_dot(DoubleVector*, DoubleVector*);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
 
