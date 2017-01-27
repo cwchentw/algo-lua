@@ -270,7 +270,7 @@ end
 --- The length of the vector.
 -- @return Length.
 function DoubleVector:len()
-  return cvector.double_vector_size(self.vec)
+  return tonumber(cvector.double_vector_size(self.vec))
 end
 
 return DoubleVector
