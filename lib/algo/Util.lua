@@ -1,6 +1,7 @@
 --- `algo.Util` class.
 -- Some helper functions.
 -- @classmod Util
+local String = require "algo.String"
 
 local Util = {}
 package.loaded['Util'] = Util
@@ -77,6 +78,19 @@ function Util:get_os()
 	end
 
 	return os_name, arch_name
+end
+
+--- Load C library by LuaJIT FFI.  We assume that our C libaray is in LUA_CPATH.
+function Util:ffi_load(ffi, name)
+	local cpath = String:new(package.cpath)
+	cpath = cpath:gsub("?", name)
+
+	for path in cpath:split(";") do
+		local out = ffi.load(path:raw())
+		if out then
+			return out
+		end
+	end
 end
 
 return Util

@@ -54,6 +54,13 @@ do
   assert(s:len() == 5)
 end
 
+-- String substitution
+do
+  local s = String:new("/home/user/.luarocks/lib/lua/5.1/?.so")
+  local out = s:gsub("?", "libdoubleVector")
+  assert(out:raw() == "/home/user/.luarocks/lib/lua/5.1/libdoubleVector.so")
+end
+
 -- Remove substring
 do
   local s = String:new("Hello World")
@@ -69,4 +76,5 @@ do
   assert(f():raw() == "/home/user/.luarocks/lib/lua/5.1/?.so")
   assert(f():raw() == "/usr/local/lib/lua/5.1/?.so")
   assert(f():raw() == "./?.so")
+  assert(f() == nil)
 end

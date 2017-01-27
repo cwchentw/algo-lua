@@ -128,6 +128,11 @@ function LuaString:insert(idx, s)
   return LuaString:new(raw)
 end
 
+function LuaString:gsub(pattern, replace, n)
+  local raw = string.gsub(self.raw_string, pattern, replace, n)
+  return LuaString:new(raw)
+end
+
 --- Remove substring from LuaString.  If neither `start` nor `stop` is supplied,
 -- remove last character.
 -- @param start start location
@@ -175,7 +180,13 @@ function LuaString:split(d)
   end
 
   local str = self.raw_string
+  local m = nil
+  local last = false
   return function()
+    if last then
+      return nil
+    end
+
     local i, j = string.find(str, _d)
     local out = nil
 
@@ -187,6 +198,10 @@ function LuaString:split(d)
     if out then
       return LuaString:new(out)
     else
+      last = true
+    end
+
+    if last then
       return LuaString:new(str)
     end
   end

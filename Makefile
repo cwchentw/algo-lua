@@ -17,6 +17,8 @@ SRC_SUBDIR=$(SRCDIR)/algo
 
 DOUBLE_VECTOR=doubleVector.c
 DOUBLE_VECTOR_LIB=libdoubleVector
+DOUBLE_MATRIX=doubleMatrix.c
+DOUBLE_MATRIX_LIB=libdoubleMatrix
 
 USER=$(shell whoami)
 ifeq ($(USER), "root")
@@ -52,9 +54,11 @@ install: lib
 
 lib: object
 	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o)
+	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(DOUBLE_MATRIX_LIB)$(SUFFIX) $(SRC_SUBDIR)/$(DOUBLE_MATRIX:.c=.o)
 
 object:
 	$(CC) -c -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o) $(CFLAGS_OBJ) -lm $(SRC_SUBDIR)/$(DOUBLE_VECTOR)
+	$(CC) -c -o $(SRC_SUBDIR)/$(DOUBLE_MATRIX:.c=.o) $(CFLAGS_OBJ) -lm $(SRC_SUBDIR)/$(DOUBLE_MATRIX)
 
 clean:
 	$(RM) $(RMFLAG) $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(VECTOR:.c=.o) $(TARGET) *.dSYM

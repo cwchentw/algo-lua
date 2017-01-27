@@ -4,7 +4,7 @@
 -- [ffi from LuaJIT](http://luajit.org/ext_ffi.html) is used for binding.
 -- @classmod DoubleVector
 local ffi = require "ffi"
-local util = require "algo.Util"
+local Util = require "algo.Util"
 
 ffi.cdef([[
   typedef struct {
@@ -37,33 +37,7 @@ ffi.cdef([[
   char* utoa(unsigned);
   ]])
 
-local cvector = nil
-local os_type, _ = util.get_os()
-
--- Refactor it later.
-local version = _VERSION:match("%d+%.%d+")
-local prefix = os.getenv("PREFIX") or os.getenv("HOME")
-local rockpath_unix = nil
-local rockpath_win = nil
-if prefix == os.getenv("HOME") then
-  rockpath_unix = "/.luarocks/lib/lua/" .. version .. "/"
-  rockpath_win = "\\.luarocks\\lib\\lua\\" .. version .. "\\"
-else
-  rockpath_unix = "/lib/luarocks/lib/lua/" .. version .. "/"
-  rockpath_win = "\\lib\\luarocks\\lib\\lua\\" .. version .. "\\"
-end
-
-if os_type == "Windows" then
-  cvector = ffi.load(prefix .. rockpath_win .. "libdoubleVector.dll")
-elseif os_type == "Mac" then
-  cvector = ffi.load(prefix .. rockpath_unix .. "libdoubleVector.dylib")
-elseif os_type == "Linux" then
-  cvector = ffi.load(prefix .. rockpath_unix .. "libdoubleVector.so")
-else
-  error("Unsupported platform")
-end
-
--- local cvector = ffi.load("libdoubleVector")
+local cvector = Util:ffi_load(ffi, "libdoubleVector")
 
 local DoubleVector = {}
 package.loaded['DoubleVector'] = DoubleVector
