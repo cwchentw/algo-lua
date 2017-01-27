@@ -51,6 +51,7 @@ install: lib
 	install $(LIBDIR)/init.lua $(LUADIR)
 	install $(LIB_SUBDIR)/*.lua $(LUADIR)
 	install $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(CLUADIR)
+	install $(SRC_SUBDIR)/$(DOUBLE_MATRIX_LIB)$(SUFFIX) $(CLUADIR)
 
 lib: object
 	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o)
