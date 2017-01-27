@@ -18,11 +18,15 @@ double double_matrix_get_nrow(DoubleMatrix*);
 double double_matrix_get_ncol(DoubleMatrix*);
 double double_matrix_get(DoubleMatrix*, size_t, size_t);
 void double_matrix_set(DoubleMatrix*, size_t, size_t, double);
+DoubleVector* double_matrix_get_row(DoubleMatrix*, size_t);
+DoubleVector* double_matrix_get_col(DoubleMatrix*, size_t);
 void double_matrix_free(DoubleMatrix*);
 ]])
 
 local cmatrix = Util:ffi_load(ffi, "libdoubleMatrix")
+local cvector = Util:ffi_load(ffi, "libdoubleVector")
 
+local DoubleVector = require "algo.DoubleVector"
 local DoubleMatrix = {}
 package.loaded['DoubleMatrix'] = DoubleMatrix
 
@@ -44,6 +48,27 @@ function DoubleMatrix:new(nrow, ncol)
   self.mtx = cmatrix.double_matrix_new(nrow, ncol);
 
   return self
+end
+
+--- Create a matrix from a matrix-style table
+-- @param table a matrix-style table
+-- @return A matrix (object).
+function DoubleMatrix:from_table(table)
+  local nrow = #table
+  assert(nrow > 0)
+
+  local ncol = #(table[1])
+  assert(ncol > 0)
+
+  local mtx = DoubleMatrix:new(nrow, ncol)
+
+  for i = 1, nrow do
+    for j = 1, ncol do
+      mtx:set(i, j, table[i][j])
+    end
+  end
+
+  return mtx
 end
 
 --- Get the row size of the matrix.
@@ -69,13 +94,13 @@ function DoubleMatrix:get(row, col)
   local ncol = self:col()
   assert(1 <= col and col <= ncol)
 
-  return cmatrix.double_matrix_get(self.mtx, row, col)
+  return cmatrix.double_matrix_get(self.mtx, row - 1, col - 1)
 end
 
 --- Assign data to the matrix by (row, col) pair.
 -- @param row, Row, 1-based number
 -- @param col, Column, 1-based number
--- @param data, Data (number)
+-- @param data, Data (number).
 function DoubleMatrix:set(row, col, data)
   local nrow = self:row()
   assert(1 <= row and row <= nrow)
@@ -85,7 +110,39 @@ function DoubleMatrix:set(row, col, data)
 
   assert(type(data) == "number")
 
-  cmatrix.double_matrix_set(self.mtx, row, col, data)
+  cmatrix.double_matrix_set(self.mtx, row - 1, col - 1, data)
+end
+
+-- Create a double vector from raw vector.
+local function _vector_from_raw(v)
+  local vector = DoubleVector:new(0)
+  cvector.double_vector_free(vector.vec)
+  vector.vec = v
+  return vector
+end
+
+--- Get specific row from the matrix.
+-- @param row Row, 1-based number
+-- @return A DoubleVector (object).
+function DoubleMatrix:get_row(row)
+  local nrow = self:row()
+  assert(1 <= row and row <= nrow)
+
+  local raw_vec = cmatrix.double_matrix_get_row(self.mtx, row - 1)
+
+  return _vector_from_raw(raw_vec)
+end
+
+--- Get specific column from the matrix.
+-- @param col Column, 1-based number
+-- @return A DoubleVector (object).
+function DoubleMatrix:get_col(col)
+  local ncol = self:col()
+  assert(1 <= col and col <= ncol)
+
+  local raw_vec = cmatrix.double_matrix_get_col(self.mtx, col - 1)
+
+  return _vector_from_raw(raw_vec)
 end
 
 return DoubleMatrix

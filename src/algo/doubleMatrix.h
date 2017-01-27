@@ -7,6 +7,8 @@
 #include <stddef.h>
 #endif
 
+#include "doubleVector.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,6 +24,8 @@ double double_matrix_get_nrow(DoubleMatrix*);
 double double_matrix_get_ncol(DoubleMatrix*);
 double double_matrix_get(DoubleMatrix*, size_t, size_t);
 void double_matrix_set(DoubleMatrix*, size_t, size_t, double);
+DoubleVector* double_matrix_get_row(DoubleMatrix*, size_t);
+DoubleVector* double_matrix_get_col(DoubleMatrix*, size_t);
 void double_matrix_free(DoubleMatrix*);
 
 #ifdef __cplusplus
