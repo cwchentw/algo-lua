@@ -32,5 +32,5 @@ task 'doc' do
 end
 
 task 'clean' do
-  sh "#{RM} #{RMFLAGS} #{DOC_DIR}"
+  sh "make clean"
 end

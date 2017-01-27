@@ -62,4 +62,5 @@ object:
 	$(CC) -c -o $(SRC_SUBDIR)/$(DOUBLE_MATRIX:.c=.o) $(CFLAGS_OBJ) -lm $(SRC_SUBDIR)/$(DOUBLE_MATRIX)
 
 clean:
-	$(RM) $(RMFLAG) $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(VECTOR:.c=.o) $(TARGET) *.dSYM
+	$(RM) $(RMFLAG) $(SRC_SUBDIR)/*.o $(SRC_SUBDIR)/*$(SUFFIX) *.dSYM
+	$(RM) $(RMFLAG) doc
