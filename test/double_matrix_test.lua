@@ -40,3 +40,13 @@ do
   local v = m:get_row(2)
   assert(v == DoubleVector:from_table({5, 6, 7, 8}))
 end
+
+-- Get column vector
+do
+  local table = {{1, 2, 3, 4},
+                 {5, 6, 7, 8},
+                 {9, 10, 11, 12}}
+  local m = Matrix:from_table(table)
+  local v = m:get_col(3)
+  assert(v == DoubleVector:from_table({3, 7, 11}))
+end
