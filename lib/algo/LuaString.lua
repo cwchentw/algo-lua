@@ -6,27 +6,7 @@ local Array = require "algo.Array"
 local LuaString = {}
 package.loaded['LuaString'] = LuaString
 
---- Index string object.
--- Since using internal indexing is sometimes tricky; use OOP method call
--- `get` is preferred.
-LuaString.__index = function (t, k)
-  if type(k) == "number" then
-    return t.string:get(k)
-  else
-    return rawget(LuaString, k)
-  end
-end
-
---- Assign data by indexing the string object.
--- Since using internal indexing is sometimes tricky; use OOP method call
--- `set` is preferred.
-LuaString.__newindex = function (t, k, v)
-  if type(k) == "number" then
-    t.string:set(k, v)
-  else
-    rawset(LuaString, k, v)
-  end
-end
+LuaString.__index = LuaString
 
 --- LuaString presentation of the string object.
 LuaString.__tostring = function (o)
@@ -85,13 +65,13 @@ function LuaString:new(s)
   return self
 end
 
---- Get a raw Lua string from a string object.
+--- Get raw string from LuaString object.
 function LuaString:raw()
   return self.raw_string
 end
 
 --- Iterate over the string object.
--- @return An iterator of string objects; each object presents an Lua string.
+-- @return An iterator of string objects; each object presents an LuaString.
 function LuaString:iter()
   return function ()
     self._index = self._index + 1
@@ -152,11 +132,29 @@ function LuaString:insert(idx, s)
   return LuaString:new(raw)
 end
 
+--- Remove substring from LuaString.  If neither `start` nor `stop` is supplied,
+-- remove last character.
+-- @param start start location
+-- @param stop stop location
+-- @return A new LuaString
 function LuaString:remove(start, stop)
   local raw = self.raw_string
   local len = string.len(raw)
+  local _start = nil
+  local _stop = nil
+  if start == nil then
+    _start = len
+  else
+    _start = start
+  end
 
-  raw = string.sub(raw, 1, start - 1) .. string.sub(raw, stop + 1, len)
+  if stop == nil then
+    _stop = len
+  else
+    _stop = stop
+  end
+
+  raw = string.sub(raw, 1, _start - 1) .. string.sub(raw, _stop + 1, len)
 
   return LuaString:new(raw)
 end

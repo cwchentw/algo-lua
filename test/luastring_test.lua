@@ -58,6 +58,8 @@ end
 do
   local s = String:new("Hello World")
   assert(s:remove(1, 6):raw() == "World")
+  assert(s:remove(6):raw() == "Hello")
+  assert(s:remove():raw() == "Hello Worl")
 end
 
 -- Split string
