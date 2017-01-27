@@ -59,3 +59,12 @@ do
   local s = String:new("Hello World")
   assert(s:remove(1, 6):raw() == "World")
 end
+
+-- Split string
+do
+  local s = String:new("/home/user/.luarocks/lib/lua/5.1/?.so;/usr/local/lib/lua/5.1/?.so;./?.so")
+  local f = s:split(";")
+  assert(f():raw() == "/home/user/.luarocks/lib/lua/5.1/?.so")
+  assert(f():raw() == "/usr/local/lib/lua/5.1/?.so")
+  assert(f():raw() == "./?.so")
+end

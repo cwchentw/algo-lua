@@ -161,9 +161,41 @@ function LuaString:remove(start, stop)
   return LuaString:new(raw)
 end
 
+--- Reverse string.
+-- @return Reversed LuaString
 function LuaString:reverse()
   local raw = string.reverse(self.raw_string)
   return LuaString:new(raw)
+end
+
+--- Split string by a delimiter
+-- @param d a delimiter, a native
+-- @return An iterator of split LuaString.
+function LuaString:split(d)
+  local _d = nil
+
+  if type(d) == "table" then
+    _d = d.raw_string
+  else
+    _d = d
+  end
+
+  local str = self.raw_string
+  return function()
+    local i, j = string.find(str, _d)
+    local out = nil
+
+    if i then
+      out = string.sub(str, 1, i - 1)
+      str = string.sub(str, j + 1, str:len())
+    end
+
+    if out then
+      return LuaString:new(out)
+    else
+      return LuaString:new(str)
+    end
+  end
 end
 
 return LuaString
