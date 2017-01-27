@@ -1,27 +1,37 @@
 ifeq ($(OS), Windows_NT)
-	LIB=libdoubleVector.dll
+	SUFFIX=.dll
 else
 	UNAME := $(shell uname)
 	ifeq ($(UNAME), Darwin)
-		LIB=libdoubleVector.dylib
+		SUFFIX=.dylib
 	else
-		LIB=libdoubleVector.so
+		SUFFIX=.so
 	endif
 endif
-
-MACOSX_DEPLOYMENT_TARGET=10.10
-LUA_VERSION=5.1
 
 LIBDIR=lib
 LIB_SUBDIR=$(LIBDIR)/algo
 
 SRCDIR=src
-INCLUDE=$(SRCDIR)
 SRC_SUBDIR=$(SRCDIR)/algo
-SOURCE=$(SRC_SUBDIR)/doubleVector.c
 
-HOME=$(shell echo $$HOME)
-DESTDIR=$(HOME)/.luarocks
+DOUBLE_VECTOR=doubleVector.c
+DOUBLE_VECTOR_LIB=libdoubleVector
+
+USER=$(shell whoami)
+ifeq ($(USER), "root")
+	PREFIX=/usr/local
+else
+	PREFIX=$(shell echo $$HOME)
+endif
+
+ifeq ($(USER), "root")
+	DESTDIR=$(PREFIX)
+else
+	DESTDIR=$(PREFIX)/.luarocks
+endif
+
+LUA_VERSION=5.1
 CLUADIR ?= $(DESTDIR)/lib/lua/$(LUA_VERSION)
 LUADIR ?= $(DESTDIR)/share/lua/$(LUA_VERSION)/algo
 
@@ -35,15 +45,16 @@ all: install
 
 install: lib
 	mkdir -p $(LUADIR)
+	mkdir -p $(CLUADIR)
 	install $(LIBDIR)/init.lua $(LUADIR)
 	install $(LIB_SUBDIR)/*.lua $(LUADIR)
-	install $(SRC_SUBDIR)/$(LIB) $(CLUADIR)
+	install $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(CLUADIR)
 
 lib: object
-	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(LIB) $(SOURCE:.c=.o) -I $(INCLUDE)
+	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o)
 
 object:
-	$(CC) -c -o $(SOURCE:.c=.o) $(CFLAGS_OBJ) $(SOURCE)
+	$(CC) -c -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o) $(CFLAGS_OBJ) -lm $(SRC_SUBDIR)/$(DOUBLE_VECTOR)
 
 clean:
-	$(RM) $(RMFLAG) $(SRC_SUBDIR)/$(LIB) $(VECTOR:.c=.o) $(TARGET) *.dSYM
+	$(RM) $(RMFLAG) $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(VECTOR:.c=.o) $(TARGET) *.dSYM

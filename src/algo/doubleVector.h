@@ -31,6 +31,9 @@ extern "C" {
   DoubleVector* double_vector_div(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_div_first(double, DoubleVector*);
   DoubleVector* double_vector_scalar_div_second(DoubleVector*, double);
+  DoubleVector* double_vector_pow(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_scalar_pow_first(double, DoubleVector*);
+  DoubleVector* double_vector_scalar_pow_second(DoubleVector*, double);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
 

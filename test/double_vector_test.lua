@@ -115,3 +115,30 @@ do
   assert(math.abs(v3:get(2) - 1.5) < 1e-6)
   assert(math.abs(v3:get(3) - 1) < 1e-6)
 end
+
+-- Vector power.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+  local v2 = Vector:from_table({2, 3, 4})
+
+  local v = v1 ^ v2
+
+  assert(math.abs(v:get(1) - 1) < 1e-6)
+  assert(math.abs(v:get(2) - 8) < 1e-6)
+  assert(math.abs(v:get(3) - 81) < 1e-6)
+end
+
+-- Vector scalar power.
+do
+  local v1 = Vector:from_table({1, 2, 3})
+
+  local v2 = v1 ^ 3
+  assert(math.abs(v2:get(1) - 1) < 1e-6)
+  assert(math.abs(v2:get(2) - 8) < 1e-6)
+  assert(math.abs(v2:get(3) - 27) < 1e-6)
+
+  local v3 = 3 ^ v1
+  assert(math.abs(v3:get(1) - 3) < 1e-6)
+  assert(math.abs(v3:get(2) - 9) < 1e-6)
+  assert(math.abs(v3:get(3) - 27) < 1e-6)
+end

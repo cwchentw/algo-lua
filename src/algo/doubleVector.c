@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <math.h>
 #include "doubleVector.h"
 
 char dtoa(int d) {
@@ -247,10 +248,52 @@ DoubleVector* double_vector_scalar_div_second(DoubleVector* v1, double s) {
   return v;
 }
 
+DoubleVector* double_vector_pow(DoubleVector* v1, DoubleVector* v2) {
+  size_t len1 = v1->size;
+  size_t len2 = v2->size;
+  if (len1 != len2) {
+    return NULL;
+  }
+
+  DoubleVector* v = double_vector_new(len1);
+
+  for (int i = 0; i < len1; i++) {
+    double_vector_set(v, i,
+      pow(double_vector_get(v1, i), double_vector_get(v2, i)));
+  }
+
+  return v;
+}
+
+DoubleVector* double_vector_scalar_pow_first(double s, DoubleVector* v1) {
+  size_t len = v1->size;
+
+  DoubleVector* v = double_vector_new(len);
+
+  for (int i = 0; i < len; i++) {
+    double_vector_set(v, i,
+      pow(s, double_vector_get(v1, i)));
+  }
+
+  return v;
+}
+
+DoubleVector* double_vector_scalar_pow_second(DoubleVector* v1, double s) {
+  size_t len = v1->size;
+
+  DoubleVector* v = double_vector_new(len);
+
+  for (int i = 0; i < len; i++) {
+    double_vector_set(v, i,
+      pow(double_vector_get(v1, i), s));
+  }
+
+  return v;
+}
+
 void double_vector_error(DoubleVector* v, const char* msg) {
   fprintf(stderr, "%s", msg);
   double_vector_free(v);
-  exit(EXIT_FAILURE);
 }
 
 void double_vector_free(DoubleVector* v) {

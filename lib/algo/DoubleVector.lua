@@ -27,6 +27,9 @@ ffi.cdef([[
   DoubleVector* double_vector_div(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_div_first(double, DoubleVector*);
   DoubleVector* double_vector_scalar_div_second(DoubleVector*, double);
+  DoubleVector* double_vector_pow(DoubleVector*, DoubleVector*);
+  DoubleVector* double_vector_scalar_pow_first(double, DoubleVector*);
+  DoubleVector* double_vector_scalar_pow_second(DoubleVector*, double);
   void double_vector_error(DoubleVector*, const char*);
   void double_vector_free(DoubleVector*);
   char* utoa(unsigned);
@@ -195,6 +198,32 @@ DoubleVector.__div = function (v1, v2)
     assert(len1 == len2)
 
     raw = cvector.double_vector_div(v1.vec, v2.vec)
+  end
+
+  return _vector_from_raw(raw)
+end
+
+--- Vector power.
+-- @param v1 vector or number
+-- @param v2 vector or number
+-- @return A new vector.
+DoubleVector.__pow = function (v1, v2)
+  local raw = nil
+  if type(v1) == "number" and type(v2) == "table" then
+    assert(v2["get"] and v2["len"])
+    raw = cvector.double_vector_scalar_pow_first(v1, v2.vec)
+  elseif type(v1) == "table" and type(v2) == "number" then
+    assert(v1["get"] and v1["len"])
+    raw = cvector.double_vector_scalar_pow_second(v1.vec, v2)
+  else
+    assert(type(v1) == "table" and v1["get"] and v1["len"])
+    assert(type(v2) == "table" and v2["get"] and v2["len"])
+
+    local len1 = v1:len()
+    local len2 = v2:len()
+    assert(len1 == len2)
+
+    raw = cvector.double_vector_pow(v1.vec, v2.vec)
   end
 
   return _vector_from_raw(raw)
