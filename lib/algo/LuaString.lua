@@ -20,10 +20,6 @@ end
 
 --- Check whether two string object are equal.
 LuaString.__eq = function (a, b)
-  if type(a) ~= type(b) then
-    return false
-  end
-
   if a:len() ~= b:len() then
     return false
   end
