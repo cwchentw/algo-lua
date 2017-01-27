@@ -4,4 +4,6 @@ local Matrix = require "algo.DoubleMatrix"
 do
   local m = Matrix:new(3, 4)
   assert(m)
+  assert(m:row() == 3)
+  assert(m:col() == 4)
 end

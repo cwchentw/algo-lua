@@ -18,6 +18,8 @@ typedef struct DoubleMatrix {
 } DoubleMatrix;
 
 DoubleMatrix* double_matrix_new(size_t, size_t);
+double double_matrix_get_row(DoubleMatrix*);
+double double_matrix_get_col(DoubleMatrix*);
 void double_matrix_free(DoubleMatrix*);
 
 #ifdef __cplusplus

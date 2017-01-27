@@ -14,6 +14,8 @@ typedef struct DoubleMatrix {
 } DoubleMatrix;
 
 DoubleMatrix* double_matrix_new(size_t, size_t);
+double double_matrix_get_row(DoubleMatrix*);
+double double_matrix_get_col(DoubleMatrix*);
 void double_matrix_free(DoubleMatrix*);
 ]])
 
@@ -31,7 +33,7 @@ end
 --- Create a matrix with specific dimension.
 -- @param nrow row size
 -- @param ncol col size
--- @return A matrix.
+-- @return A matrix (object).
 function DoubleMatrix:new(nrow, ncol)
   assert(nrow > 0 and ncol > 0)
 
@@ -40,6 +42,18 @@ function DoubleMatrix:new(nrow, ncol)
   self.mtx = cmatrix.double_matrix_new(nrow, ncol);
 
   return self
+end
+
+--- Get the row size of the matrix.
+-- @return Row size (number).
+function DoubleMatrix:row()
+  return cmatrix.double_matrix_get_row(self.mtx)
+end
+
+--- Get the column size of the matrix.
+-- @return Column size (number).
+function DoubleMatrix:col()
+  return cmatrix.double_matrix_get_col(self.mtx)
 end
 
 return DoubleMatrix
