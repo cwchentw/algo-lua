@@ -20,6 +20,7 @@ extern "C" {
   size_t double_vector_size(DoubleVector*);
   double double_vector_get(DoubleVector*, size_t);
   void double_vector_set(DoubleVector*, size_t, double);
+  double double_vector_magnitude(DoubleVector*);
   int double_vector_equal(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_add(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_add(DoubleVector*, double);

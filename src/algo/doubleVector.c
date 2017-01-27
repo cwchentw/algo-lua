@@ -87,6 +87,17 @@ void double_vector_set(DoubleVector* v, size_t index, double data) {
   v->vec[index] = data;
 }
 
+double double_vector_magnitude(DoubleVector* v) {
+  size_t len = v->size;
+
+  double temp = 0.0;
+  for (int i = 0; i < len; i++) {
+    temp += pow(v->vec[i], 2);
+  }
+
+  return sqrt(temp);
+}
+
 int double_vector_equal(DoubleVector* v1, DoubleVector* v2) {
   if (!(v1->size == v2->size)) {
     return 0;

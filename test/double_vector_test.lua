@@ -18,6 +18,12 @@ do
   assert(v:get(3) == 3)
 end
 
+-- Magnitude.
+do
+  local v = Vector:from_table({1, 2, 3})
+  assert(math.abs(v:magnitude() - 3.741657) < 1e-6)
+end
+
 -- Vector equality
 do
   local v1 = Vector:from_table({1, 2, 3})

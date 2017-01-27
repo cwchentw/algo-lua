@@ -16,6 +16,7 @@ ffi.cdef([[
   size_t double_vector_size(DoubleVector*);
   double double_vector_get(DoubleVector*, size_t);
   void double_vector_set(DoubleVector*, size_t, double);
+  double double_vector_magnitude(DoubleVector*);
   int double_vector_equal(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_add(DoubleVector*, DoubleVector*);
   DoubleVector* double_vector_scalar_add(DoubleVector*, double);
@@ -272,6 +273,12 @@ end
 -- @return Length.
 function DoubleVector:len()
   return tonumber(cvector.double_vector_size(self.vec))
+end
+
+--- The magnitude of the vector.
+-- @return Magnitude.
+function DoubleVector:magnitude()
+  return cvector.double_vector_magnitude(self.vec)
 end
 
 --- Dot operation on two vectors
