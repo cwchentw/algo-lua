@@ -24,4 +24,22 @@ package.loaded['DoubleMatrix'] = DoubleMatrix
 
 DoubleMatrix.__index = DoubleMatrix
 
+DoubleMatrix.__gc = function (m)
+  cmatrix.double_matrix_free(m.mtx)
+end
+
+--- Create a matrix with specific dimension.
+-- @param nrow row size
+-- @param ncol col size
+-- @return A matrix.
+function DoubleMatrix:new(nrow, ncol)
+  assert(nrow > 0 and ncol > 0)
+
+  self = {}
+  setmetatable(self, DoubleMatrix)
+  self.mtx = cmatrix.double_matrix_new(nrow, ncol);
+
+  return self
+end
+
 return DoubleMatrix

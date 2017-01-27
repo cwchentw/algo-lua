@@ -6,9 +6,13 @@ DoubleMatrix* double_matrix_new(size_t nrow, size_t ncol) {
 
   matrix->nrow = nrow;
   matrix->ncol = ncol;
+  size_t size = matrix->nrow * matrix->ncol;
+  matrix->mtx = malloc(size * sizeof(double));
 
-  matrix->mtx = malloc(matrix->nrow * matrix->ncol * sizeof(double));
-
+  for (int i = 0; i < size; i++) {
+    matrix->mtx[i] = 0.0;
+  }
+  
   return matrix;
 }
 
