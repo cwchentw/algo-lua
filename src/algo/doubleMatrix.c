@@ -17,11 +17,11 @@ DoubleMatrix* double_matrix_new(size_t nrow, size_t ncol) {
   return matrix;
 }
 
-double double_matrix_get_row(DoubleMatrix* m) {
+double double_matrix_get_nrow(DoubleMatrix* m) {
   return m->nrow;
 }
 
-double double_matrix_get_col(DoubleMatrix* m) {
+double double_matrix_get_ncol(DoubleMatrix* m) {
   return m->ncol;
 }
 

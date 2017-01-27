@@ -14,8 +14,8 @@ typedef struct DoubleMatrix {
 } DoubleMatrix;
 
 DoubleMatrix* double_matrix_new(size_t, size_t);
-double double_matrix_get_row(DoubleMatrix*);
-double double_matrix_get_col(DoubleMatrix*);
+double double_matrix_get_nrow(DoubleMatrix*);
+double double_matrix_get_ncol(DoubleMatrix*);
 double double_matrix_get(DoubleMatrix*, size_t, size_t);
 void double_matrix_set(DoubleMatrix*, size_t, size_t, double);
 void double_matrix_free(DoubleMatrix*);
@@ -49,13 +49,13 @@ end
 --- Get the row size of the matrix.
 -- @return Row size (number).
 function DoubleMatrix:row()
-  return cmatrix.double_matrix_get_row(self.mtx)
+  return cmatrix.double_matrix_get_nrow(self.mtx)
 end
 
 --- Get the column size of the matrix.
 -- @return Column size (number).
 function DoubleMatrix:col()
-  return cmatrix.double_matrix_get_col(self.mtx)
+  return cmatrix.double_matrix_get_ncol(self.mtx)
 end
 
 --- Index matrix by (row, col) pair
@@ -87,4 +87,5 @@ function DoubleMatrix:set(row, col, data)
 
   cmatrix.double_matrix_set(self.mtx, row, col, data)
 end
+
 return DoubleMatrix
