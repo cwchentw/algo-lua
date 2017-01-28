@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "algoDoubleMatrix.h"
-#include "algoDoubleVector.h"
+#include "algo.h"
 
 DoubleMatrix* algo_double_matrix_new(size_t nrow, size_t ncol) {
   DoubleMatrix* matrix = malloc(sizeof(DoubleMatrix));

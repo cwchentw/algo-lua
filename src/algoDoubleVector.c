@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <math.h>
-#include "algoDoubleVector.h"
+#include "algo.h"
 
 char dtoa(int d) {
   if (d == 0) {

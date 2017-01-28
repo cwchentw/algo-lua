@@ -7,7 +7,7 @@
 #include <stddef.h>
 #endif
 
-#include "algoDoubleVector.h"
+#include "DoubleVector.h"
 
 #ifdef __cplusplus
 extern "C" {
