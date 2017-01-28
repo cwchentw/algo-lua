@@ -12,6 +12,8 @@
 local algo = {}
 package.loaded["algo"] = algo
 
+algo.version = "0.1.0"
+
 algo.Array = algo.Array or require "algo.Array"
 algo.List = algo.List or require "algo.List"
 algo.Stack = algo.Stack or require "algo.Stack"
