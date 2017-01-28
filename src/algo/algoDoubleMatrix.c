@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "doubleMatrix.h"
-#include "doubleVector.h"
+#include "algoDoubleMatrix.h"
+#include "algoDoubleVector.h"
 
-DoubleMatrix* double_matrix_new(size_t nrow, size_t ncol) {
+DoubleMatrix* algo_double_matrix_new(size_t nrow, size_t ncol) {
   DoubleMatrix* matrix = malloc(sizeof(DoubleMatrix));
 
   matrix->nrow = nrow;
@@ -19,15 +19,15 @@ DoubleMatrix* double_matrix_new(size_t nrow, size_t ncol) {
   return matrix;
 }
 
-double double_matrix_get_nrow(DoubleMatrix* m) {
+double algo_double_matrix_get_nrow(DoubleMatrix* m) {
   return m->nrow;
 }
 
-double double_matrix_get_ncol(DoubleMatrix* m) {
+double algo_double_matrix_get_ncol(DoubleMatrix* m) {
   return m->ncol;
 }
 
-double double_matrix_get(DoubleMatrix* m, size_t row, size_t col) {
+double algo_double_matrix_get(DoubleMatrix* m, size_t row, size_t col) {
   if (0 > row || row > m->nrow - 1) {
     fprintf(stderr, "Row out of size, invalid data\n");
     return 0.0;
@@ -41,7 +41,7 @@ double double_matrix_get(DoubleMatrix* m, size_t row, size_t col) {
   return m->mtx[row + m->nrow * col];
 }
 
-void double_matrix_set(DoubleMatrix* m, size_t row, size_t col, double data) {
+void algo_double_matrix_set(DoubleMatrix* m, size_t row, size_t col, double data) {
   if (0 > row || row > m->nrow - 1) {
     fprintf(stderr, "Row out of size, invalid operation\n");
     return;
@@ -55,39 +55,39 @@ void double_matrix_set(DoubleMatrix* m, size_t row, size_t col, double data) {
   m->mtx[row + m->nrow * col] = data;
 }
 
-DoubleVector* double_matrix_get_row(DoubleMatrix* m, size_t row) {
+DoubleVector* algo_double_matrix_get_row(DoubleMatrix* m, size_t row) {
   if (0 > row || row > m->nrow - 1) {
     fprintf(stderr, "Row out of size, invalid operation\n");
     return NULL;
   }
 
-  DoubleVector* vec = double_vector_new(m->ncol);
+  DoubleVector* vec = algo_double_vector_new(m->ncol);
 
   size_t col = m->ncol;
   for (int i = 0; i < col; i++) {
-    double_vector_set(vec, i, double_matrix_get(m, row, i));
+    algo_double_vector_set(vec, i, algo_double_matrix_get(m, row, i));
   }
 
   return vec;
 }
 
-DoubleVector* double_matrix_get_col(DoubleMatrix* m, size_t col) {
+DoubleVector* algo_double_matrix_get_col(DoubleMatrix* m, size_t col) {
   if (0 > col || col > m->ncol - 1) {
     fprintf(stderr, "Column out of size, invalid operation\n");
     return NULL;
   }
 
-  DoubleVector* vec = double_vector_new(m->nrow);
+  DoubleVector* vec = algo_double_vector_new(m->nrow);
 
   size_t row = m->nrow;
   for (int i = 0; i < row; i++) {
-    double_vector_set(vec, i, double_matrix_get(m, i, col));
+    algo_double_vector_set(vec, i, algo_double_matrix_get(m, i, col));
   }
 
   return vec;
 }
 
-void double_matrix_free(DoubleMatrix* m) {
+void algo_double_matrix_free(DoubleMatrix* m) {
   if (m == NULL) {
     return;
   }

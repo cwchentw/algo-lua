@@ -15,10 +15,10 @@ LIB_SUBDIR=$(LIBDIR)/algo
 SRCDIR=src
 SRC_SUBDIR=$(SRCDIR)/algo
 
-DOUBLE_VECTOR=doubleVector.c
-DOUBLE_VECTOR_LIB=libdoubleVector
-DOUBLE_MATRIX=doubleMatrix.c
-DOUBLE_MATRIX_LIB=libdoubleMatrix
+ALGO_DOUBLE_VECTOR=algoDoubleVector.c
+ALGO_DOUBLE_MATRIX=algoDoubleMatrix.c
+SOURCE=$(ALGO_DOUBLE_VECTOR) $(ALGO_DOUBLE_MATRIX)
+LIB=libalgo
 
 USER=$(shell whoami)
 ifeq ($(USER), "root")
@@ -50,12 +50,10 @@ install: lib
 	mkdir -p $(CLUADIR)
 	install $(LIBDIR)/init.lua $(LUADIR)
 	install $(LIB_SUBDIR)/*.lua $(LUADIR)
-	install $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(CLUADIR)
-	install $(SRC_SUBDIR)/$(DOUBLE_MATRIX_LIB)$(SUFFIX) $(CLUADIR)
+	install $(SRC_SUBDIR)/$(LIB)$(SUFFIX) $(CLUADIR)
 
 lib: object
-	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR_LIB)$(SUFFIX) $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o)
-	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(DOUBLE_MATRIX_LIB)$(SUFFIX) $(SRC_SUBDIR)/$(DOUBLE_MATRIX:.c=.o) $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o)
+	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(LIB)$(SUFFIX) $(SRC_SUBDIR)/*.o
 
 object:
 	$(CC) -c -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o) $(CFLAGS_OBJ) -lm $(SRC_SUBDIR)/$(DOUBLE_VECTOR)

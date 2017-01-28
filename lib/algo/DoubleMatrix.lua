@@ -13,18 +13,18 @@ typedef struct DoubleMatrix {
   double* mtx;
 } DoubleMatrix;
 
-DoubleMatrix* double_matrix_new(size_t, size_t);
-double double_matrix_get_nrow(DoubleMatrix*);
-double double_matrix_get_ncol(DoubleMatrix*);
-double double_matrix_get(DoubleMatrix*, size_t, size_t);
-void double_matrix_set(DoubleMatrix*, size_t, size_t, double);
-DoubleVector* double_matrix_get_row(DoubleMatrix*, size_t);
-DoubleVector* double_matrix_get_col(DoubleMatrix*, size_t);
-void double_matrix_free(DoubleMatrix*);
+DoubleMatrix* algo_double_matrix_new(size_t, size_t);
+double algo_double_matrix_get_nrow(DoubleMatrix*);
+double algo_double_matrix_get_ncol(DoubleMatrix*);
+double algo_double_matrix_get(DoubleMatrix*, size_t, size_t);
+void algo_double_matrix_set(DoubleMatrix*, size_t, size_t, double);
+DoubleVector* algo_double_matrix_get_row(DoubleMatrix*, size_t);
+DoubleVector* algo_double_matrix_get_col(DoubleMatrix*, size_t);
+void algo_double_matrix_free(DoubleMatrix*);
 ]])
 
-local cmatrix = Util:ffi_load(ffi, "libdoubleMatrix")
-local cvector = Util:ffi_load(ffi, "libdoubleVector")
+local algo_c = Util:ffi_load(ffi, "libalgo")
+-- local algo_c = Util:ffi_load(ffi, "libdoubleVector")
 
 local DoubleVector = require "algo.DoubleVector"
 local DoubleMatrix = {}
@@ -33,7 +33,7 @@ package.loaded['DoubleMatrix'] = DoubleMatrix
 DoubleMatrix.__index = DoubleMatrix
 
 DoubleMatrix.__gc = function (m)
-  cmatrix.double_matrix_free(m.mtx)
+  algo_c.algo_double_matrix_free(m.mtx)
 end
 
 --- Create a matrix with specific dimension.
@@ -45,7 +45,7 @@ function DoubleMatrix:new(nrow, ncol)
 
   self = {}
   setmetatable(self, DoubleMatrix)
-  self.mtx = cmatrix.double_matrix_new(nrow, ncol);
+  self.mtx = algo_c.algo_double_matrix_new(nrow, ncol);
 
   return self
 end
@@ -74,13 +74,13 @@ end
 --- Get the row size of the matrix.
 -- @return Row size (number).
 function DoubleMatrix:row()
-  return cmatrix.double_matrix_get_nrow(self.mtx)
+  return algo_c.algo_double_matrix_get_nrow(self.mtx)
 end
 
 --- Get the column size of the matrix.
 -- @return Column size (number).
 function DoubleMatrix:col()
-  return cmatrix.double_matrix_get_ncol(self.mtx)
+  return algo_c.algo_double_matrix_get_ncol(self.mtx)
 end
 
 --- Index matrix by (row, col) pair
@@ -94,7 +94,7 @@ function DoubleMatrix:get(row, col)
   local ncol = self:col()
   assert(1 <= col and col <= ncol)
 
-  return cmatrix.double_matrix_get(self.mtx, row - 1, col - 1)
+  return algo_c.algo_double_matrix_get(self.mtx, row - 1, col - 1)
 end
 
 --- Assign data to the matrix by (row, col) pair.
@@ -110,13 +110,13 @@ function DoubleMatrix:set(row, col, data)
 
   assert(type(data) == "number")
 
-  cmatrix.double_matrix_set(self.mtx, row - 1, col - 1, data)
+  algo_c.algo_double_matrix_set(self.mtx, row - 1, col - 1, data)
 end
 
 -- Create a double vector from raw vector.
 local function _vector_from_raw(v)
   local vector = DoubleVector:new(0)
-  cvector.double_vector_free(vector.vec)
+  algo_c.algo_double_vector_free(vector.vec)
   vector.vec = v
   return vector
 end
@@ -128,7 +128,7 @@ function DoubleMatrix:get_row(row)
   local nrow = self:row()
   assert(1 <= row and row <= nrow)
 
-  local raw_vec = cmatrix.double_matrix_get_row(self.mtx, row - 1)
+  local raw_vec = algo_c.algo_double_matrix_get_row(self.mtx, row - 1)
 
   return _vector_from_raw(raw_vec)
 end
@@ -140,7 +140,7 @@ function DoubleMatrix:get_col(col)
   local ncol = self:col()
   assert(1 <= col and col <= ncol)
 
-  local raw_vec = cmatrix.double_matrix_get_col(self.mtx, col - 1)
+  local raw_vec = algo_c.algo_double_matrix_get_col(self.mtx, col - 1)
 
   return _vector_from_raw(raw_vec)
 end

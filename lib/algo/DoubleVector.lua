@@ -12,32 +12,32 @@ ffi.cdef([[
   double* vec;
   } DoubleVector;
 
-  DoubleVector* double_vector_new(size_t);
-  size_t double_vector_size(DoubleVector*);
-  double double_vector_get(DoubleVector*, size_t);
-  void double_vector_set(DoubleVector*, size_t, double);
-  double double_vector_magnitude(DoubleVector*);
-  int double_vector_equal(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_add(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_scalar_add(DoubleVector*, double);
-  DoubleVector* double_vector_sub(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_scalar_sub_first(double, DoubleVector*);
-  DoubleVector* double_vector_scalar_sub_second(DoubleVector*, double);
-  DoubleVector* double_vector_mul(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_scalar_mul(DoubleVector*, double);
-  DoubleVector* double_vector_div(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_scalar_div_first(double, DoubleVector*);
-  DoubleVector* double_vector_scalar_div_second(DoubleVector*, double);
-  DoubleVector* double_vector_pow(DoubleVector*, DoubleVector*);
-  DoubleVector* double_vector_scalar_pow_first(double, DoubleVector*);
-  DoubleVector* double_vector_scalar_pow_second(DoubleVector*, double);
-  double double_vector_dot(DoubleVector*, DoubleVector*);
-  void double_vector_error(DoubleVector*, const char*);
-  void double_vector_free(DoubleVector*);
+  DoubleVector* algo_double_vector_new(size_t);
+  size_t algo_double_vector_size(DoubleVector*);
+  double algo_double_vector_get(DoubleVector*, size_t);
+  void algo_double_vector_set(DoubleVector*, size_t, double);
+  double algo_double_vector_magnitude(DoubleVector*);
+  int algo_double_vector_equal(DoubleVector*, DoubleVector*);
+  DoubleVector* algo_double_vector_add(DoubleVector*, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_add(DoubleVector*, double);
+  DoubleVector* algo_double_vector_sub(DoubleVector*, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_sub_first(double, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_sub_second(DoubleVector*, double);
+  DoubleVector* algo_double_vector_mul(DoubleVector*, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_mul(DoubleVector*, double);
+  DoubleVector* algo_double_vector_div(DoubleVector*, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_div_first(double, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_div_second(DoubleVector*, double);
+  DoubleVector* algo_double_vector_pow(DoubleVector*, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_pow_first(double, DoubleVector*);
+  DoubleVector* algo_double_vector_scalar_pow_second(DoubleVector*, double);
+  double algo_double_vector_dot(DoubleVector*, DoubleVector*);
+  void algo_double_vector_error(DoubleVector*, const char*);
+  void algo_double_vector_free(DoubleVector*);
   char* utoa(unsigned);
   ]])
 
-local cvector = Util:ffi_load(ffi, "libdoubleVector")
+local algo_c = Util:ffi_load(ffi, "libalgo")
 
 local DoubleVector = {}
 package.loaded['DoubleVector'] = DoubleVector
@@ -46,7 +46,7 @@ DoubleVector.__index = DoubleVector
 
 --- Automatically called when the object is recycled.
 DoubleVector.__gc = function (o)
-  cvector.double_vector_free(o)
+  algo_c.algo_double_vector_free(o)
 end
 
 --- Check whether two vectors are equal.
@@ -58,7 +58,7 @@ DoubleVector.__eq = function (v1, v2)
   assert(type(v1) == "table" and v1["get"] and v1["len"])
   assert(type(v2) == "table" and v2["get"] and v2["len"])
 
-  local n = cvector.double_vector_equal(v1.vec, v2.vec)
+  local n = algo_c.algo_double_vector_equal(v1.vec, v2.vec)
 
   if n ~= 0 then
     return true
@@ -70,7 +70,7 @@ end
 -- Create a double vector from raw vector.
 local function _vector_from_raw(v)
   local vector = DoubleVector:new(0)
-  cvector.double_vector_free(vector.vec)
+  algo_c.algo_double_vector_free(vector.vec)
   vector.vec = v
   return vector
 end
@@ -83,10 +83,10 @@ DoubleVector.__add = function (v1, v2)
   local raw = nil
   if type(v1) == "number" and type(v2) == "table" then
     assert(v2["get"] and v2["len"])
-    raw = cvector.double_vector_scalar_add(v2.vec, v1)
+    raw = algo_c.algo_double_vector_scalar_add(v2.vec, v1)
   elseif type(v1) == "table" and type(v2) == "number" then
     assert(v1["get"] and v1["len"])
-    raw = cvector.double_vector_scalar_add(v1.vec, v2)
+    raw = algo_c.algo_double_vector_scalar_add(v1.vec, v2)
   else
     assert(type(v1) == "table" and v1["get"] and v1["len"])
     assert(type(v2) == "table" and v2["get"] and v2["len"])
@@ -95,7 +95,7 @@ DoubleVector.__add = function (v1, v2)
     local len2 = v2:len()
     assert(len1 == len2)
 
-    raw = cvector.double_vector_add(v1.vec, v2.vec)
+    raw = algo_c.algo_double_vector_add(v1.vec, v2.vec)
   end
 
   return _vector_from_raw(raw)
@@ -109,10 +109,10 @@ DoubleVector.__sub = function (v1, v2)
   local raw = nil
   if type(v1) == "number" and type(v2) == "table" then
     assert(v2["get"] and v2["len"])
-    raw = cvector.double_vector_scalar_sub_first(v1, v2.vec)
+    raw = algo_c.algo_double_vector_scalar_sub_first(v1, v2.vec)
   elseif type(v1) == "table" and type(v2) == "number" then
     assert(v1["get"] and v1["len"])
-    raw = cvector.double_vector_scalar_sub_second(v1.vec, v2)
+    raw = algo_c.algo_double_vector_scalar_sub_second(v1.vec, v2)
   else
     assert(type(v1) == "table" and v1["get"] and v1["len"])
     assert(type(v2) == "table" and v2["get"] and v2["len"])
@@ -121,7 +121,7 @@ DoubleVector.__sub = function (v1, v2)
     local len2 = v2:len()
     assert(len1 == len2)
 
-    raw = cvector.double_vector_sub(v1.vec, v2.vec)
+    raw = algo_c.algo_double_vector_sub(v1.vec, v2.vec)
   end
 
   return _vector_from_raw(raw)
@@ -135,10 +135,10 @@ DoubleVector.__mul = function (v1, v2)
   local raw = nil
   if type(v1) == "number" and type(v2) == "table" then
     assert(v2["get"] and v2["len"])
-    raw = cvector.double_vector_scalar_mul(v2.vec, v1)
+    raw = algo_c.algo_double_vector_scalar_mul(v2.vec, v1)
   elseif type(v1) == "table" and type(v2) == "number" then
     assert(v1["get"] and v1["len"])
-    raw = cvector.double_vector_scalar_mul(v1.vec, v2)
+    raw = algo_c.algo_double_vector_scalar_mul(v1.vec, v2)
   else
     assert(type(v1) == "table" and v1["get"] and v1["len"])
     assert(type(v2) == "table" and v2["get"] and v2["len"])
@@ -147,7 +147,7 @@ DoubleVector.__mul = function (v1, v2)
     local len2 = v2:len()
     assert(len1 == len2)
 
-    raw = cvector.double_vector_mul(v1.vec, v2.vec)
+    raw = algo_c.algo_double_vector_mul(v1.vec, v2.vec)
   end
 
   return _vector_from_raw(raw)
@@ -161,10 +161,10 @@ DoubleVector.__div = function (v1, v2)
   local raw = nil
   if type(v1) == "number" and type(v2) == "table" then
     assert(v2["get"] and v2["len"])
-    raw = cvector.double_vector_scalar_div_first(v1, v2.vec)
+    raw = algo_c.algo_double_vector_scalar_div_first(v1, v2.vec)
   elseif type(v1) == "table" and type(v2) == "number" then
     assert(v1["get"] and v1["len"])
-    raw = cvector.double_vector_scalar_div_second(v1.vec, v2)
+    raw = algo_c.algo_double_vector_scalar_div_second(v1.vec, v2)
   else
     assert(type(v1) == "table" and v1["get"] and v1["len"])
     assert(type(v2) == "table" and v2["get"] and v2["len"])
@@ -173,7 +173,7 @@ DoubleVector.__div = function (v1, v2)
     local len2 = v2:len()
     assert(len1 == len2)
 
-    raw = cvector.double_vector_div(v1.vec, v2.vec)
+    raw = algo_c.algo_double_vector_div(v1.vec, v2.vec)
   end
 
   return _vector_from_raw(raw)
@@ -187,10 +187,10 @@ DoubleVector.__pow = function (v1, v2)
   local raw = nil
   if type(v1) == "number" and type(v2) == "table" then
     assert(v2["get"] and v2["len"])
-    raw = cvector.double_vector_scalar_pow_first(v1, v2.vec)
+    raw = algo_c.algo_double_vector_scalar_pow_first(v1, v2.vec)
   elseif type(v1) == "table" and type(v2) == "number" then
     assert(v1["get"] and v1["len"])
-    raw = cvector.double_vector_scalar_pow_second(v1.vec, v2)
+    raw = algo_c.algo_double_vector_scalar_pow_second(v1.vec, v2)
   else
     assert(type(v1) == "table" and v1["get"] and v1["len"])
     assert(type(v2) == "table" and v2["get"] and v2["len"])
@@ -199,7 +199,7 @@ DoubleVector.__pow = function (v1, v2)
     local len2 = v2:len()
     assert(len1 == len2)
 
-    raw = cvector.double_vector_pow(v1.vec, v2.vec)
+    raw = algo_c.algo_double_vector_pow(v1.vec, v2.vec)
   end
 
   return _vector_from_raw(raw)
@@ -211,7 +211,7 @@ end
 function DoubleVector:new(size)
   self = {}
   setmetatable(self, DoubleVector)
-  self.vec = cvector.double_vector_new(size)
+  self.vec = algo_c.algo_double_vector_new(size)
   return self
 end
 
@@ -233,26 +233,26 @@ end
 -- @param i the index
 -- @return The element.
 function DoubleVector:get(index)
-  return cvector.double_vector_get(self.vec, index - 1)
+  return algo_c.algo_double_vector_get(self.vec, index - 1)
 end
 
 --- Assign an element by indexing the vector.
 -- @param index the index
 -- @param data the element
 function DoubleVector:set(index, data)
-  cvector.double_vector_set(self.vec, index - 1, data)
+  algo_c.algo_double_vector_set(self.vec, index - 1, data)
 end
 
 --- The length of the vector.
 -- @return Length.
 function DoubleVector:len()
-  return tonumber(cvector.double_vector_size(self.vec))
+  return tonumber(algo_c.algo_double_vector_size(self.vec))
 end
 
 --- The magnitude of the vector.
 -- @return Magnitude.
 function DoubleVector:magnitude()
-  return cvector.double_vector_magnitude(self.vec)
+  return algo_c.algo_double_vector_magnitude(self.vec)
 end
 
 --- Dot operation on two vectors
@@ -265,7 +265,7 @@ function DoubleVector:dot(v)
   assert(len1 == len2)
 
   if type(v.vec) == "cdata" then
-    return cvector.double_vector_dot(self.vec, v.vec)
+    return algo_c.algo_double_vector_dot(self.vec, v.vec)
   end
 
   local result = 0
