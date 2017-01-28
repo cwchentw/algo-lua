@@ -24,7 +24,6 @@ void algo_double_matrix_free(DoubleMatrix*);
 ]])
 
 local algo_c = Util:ffi_load(ffi, "libalgo")
--- local algo_c = Util:ffi_load(ffi, "libdoubleVector")
 
 local DoubleVector = require "algo.DoubleVector"
 local DoubleMatrix = {}

@@ -50,15 +50,14 @@ install: lib
 	mkdir -p $(CLUADIR)
 	install $(LIBDIR)/init.lua $(LUADIR)
 	install $(LIB_SUBDIR)/*.lua $(LUADIR)
-	install $(SRC_SUBDIR)/$(LIB)$(SUFFIX) $(CLUADIR)
+	install $(SRCDIR)/$(LIB)$(SUFFIX) $(CLUADIR)
 
 lib: object
-	$(CC) $(CFLAGS_LIB) -o $(SRC_SUBDIR)/$(LIB)$(SUFFIX) $(SRC_SUBDIR)/*.o
+	$(CC) $(CFLAGS_LIB) -o $(SRCDIR)/$(LIB)$(SUFFIX) $(SRCDIR)/*.o
 
 object:
-	$(CC) -c -o $(SRC_SUBDIR)/$(DOUBLE_VECTOR:.c=.o) $(CFLAGS_OBJ) -lm $(SRC_SUBDIR)/$(DOUBLE_VECTOR)
-	$(CC) -c -o $(SRC_SUBDIR)/$(DOUBLE_MATRIX:.c=.o) $(CFLAGS_OBJ) -lm $(SRC_SUBDIR)/$(DOUBLE_MATRIX)
+	$(CC) -c -o $(SRCDIR)/$(ALGO_DOUBLE_VECTOR:.c=.o) $(CFLAGS_OBJ) -lm $(SRCDIR)/$(ALGO_DOUBLE_VECTOR)
+	$(CC) -c -o $(SRCDIR)/$(ALGO_DOUBLE_MATRIX:.c=.o) $(CFLAGS_OBJ) -lm $(SRCDIR)/$(ALGO_DOUBLE_MATRIX)
 
 clean:
-	$(RM) $(RMFLAG) $(SRC_SUBDIR)/*.o $(SRC_SUBDIR)/*$(SUFFIX) *.dSYM
-	$(RM) $(RMFLAG) doc
+	$(RM) $(RMFLAG) $(SRCDIR)/*.o $(SRCDIR)/*$(SUFFIX) *.dSYM doc
