@@ -30,7 +30,7 @@ dependencies = {
 }
 
 build = {
-  type = "make",
+  type = "builtin",
   modules = {
     algo = "lib/init.lua",
     ["algo.Array"] = "lib/algo/Array.lua",
@@ -42,17 +42,9 @@ build = {
     ["algo.Set"] = "lib/algo/Set.lua",
     ["algo.Heap"] = "lib/algo/Heap.lua",
     ["algo.NaiveBSTree"] = "lib/algo/NaiveBSTree.lua",
-    ["algo.Vector"] = "lib/algo/Vector.lua",
-    ["algo.DoubleVector"] = {
-      sources = { "lib/algo/DoubleVector.lua" ,
-                  "src/algo/DoubleVector.h",
-                  "src/algo/DoubleVector.c", },
-      defines = { CFLAGS = "-fPIC"}
-    },
     ["algo.String"] = "lib/algo/String.lua",
     ["algo.LuaString"] = "lib/algo/LuaString.lua",
     ["algo.UTF8String"] = "lib/algo/UTF8String.lua",
-    ["algo.BigInt"] = "lib/algo/BigInt.lua",
     ["algo.Util"] = "lib/algo/Util.lua",
   }
 }
