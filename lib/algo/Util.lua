@@ -2,6 +2,7 @@
 -- Some helper functions.
 -- @classmod Util
 local String = require "algo.String"
+local lfs = require "lfs"
 
 local Util = {}
 package.loaded['Util'] = Util
@@ -85,10 +86,13 @@ function Util:ffi_load(ffi, name)
 	local cpath = String:new(package.cpath)
 	cpath = cpath:gsub("?", name)
 
+
 	for path in cpath:split(";") do
-		local out = ffi.load(path:raw())
-		if out then
-			return out
+		if lfs.attributes(path:raw()) then
+			local out = ffi.load(path:raw())
+			if out then
+				return out
+			end
 		end
 	end
 end
