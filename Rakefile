@@ -1,6 +1,12 @@
-# luaenv specific setting
-ENV['LUAENV_ROOT']="#{ENV['HOME']}/.luaenv"
-LUAENV_EXEC="exec #{ENV['LUAENV_ROOT']}/libexec/luaenv exec"
+require 'mkmf'
+
+if find_executable 'luaenv' then
+  # luaenv specific setting
+  ENV['LUAENV_ROOT']="#{ENV['HOME']}/.luaenv"
+  LUAENV_EXEC="exec #{ENV['LUAENV_ROOT']}/libexec/luaenv exec"
+else
+  LUAENV_EXEC=""
+end
 
 TARGET = "algo"
 LUA = ENV['LUA'] || "luajit"
@@ -20,12 +26,20 @@ task 'test' => [:install] do
 end
 
 task 'install' => [:doc] do
-  sh "#{LUAENV_EXEC} #{LUAROCKS} make #{ROCKSPEC}"
+  if find_executable 'luaenv' then
+    sh "#{LUAENV_EXEC} #{LUAROCKS} make #{ROCKSPEC}"
+  else
+    sh "#{LUAROCKS} make #{ROCKSPEC} --local"
+  end
 end
 
 task 'uninstall' do
   begin
-    sh "#{LUAENV_EXEC} #{LUAROCKS} remove #{TARGET} --force"
+    if find_executable 'luaenv' then
+      sh "#{LUAENV_EXEC} #{LUAROCKS} remove #{TARGET} --force"
+    else
+      sh "#{LUAROCKS} remove #{TARGET} --local --force"
+    end
   rescue
     # Do nothing even the task failed
   end
