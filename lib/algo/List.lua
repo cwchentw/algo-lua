@@ -117,8 +117,8 @@ function List:get(index)
 end
 
 --- Iterate over the list.
--- @return an iterator over the list
-function List:iter()
+-- @return An iterator over the list
+function List:next()
   local prev = nil
 
   return function()
@@ -130,6 +130,12 @@ function List:iter()
       return nil
     end
   end
+end
+
+--- Iterator over the list.
+-- @return An iterator over the list.
+function List:iter()
+  return self:next()
 end
 
 --- Reset iterator location.

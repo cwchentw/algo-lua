@@ -101,13 +101,19 @@ function Array:peek_tail()
 end
 
 --- Iterate over the array.
--- @return the iterator over the array
-function Array:iter()
+-- @return An iterator over the array
+function Array:next()
   return function ()
     self._index = self._index + 1
 
     return self:get(self._index)
   end
+end
+
+--- Iterate over the array.
+-- @return An iterator over the array.
+function Array:iter()
+  return self:next()
 end
 
 function Array:reset()

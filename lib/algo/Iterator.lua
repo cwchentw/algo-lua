@@ -1,8 +1,8 @@
 --- `algo.Iterator` class.
--- An iterator for any container that provides `iter` and `reset` method.
--- `iter` method return an element on each run; `reset` method reset the
+-- An iterator for any container that provides `next` and `reset` method.
+-- `next` method return an element on each run; `reset` method reset the
 -- internal iterator.  See `algo.Array` and `algo.List` for the examples of
--- `iter` and `reset` methods.
+-- `next` and `reset` methods.
 -- @classmod Iterator
 local Heap = require "algo.Heap"
 local Iterator = {}
@@ -11,12 +11,12 @@ package.loaded['Iterator'] = Iterator
 Iterator.__index = Iterator
 
 --- Create a new iterator object
--- @param obj the iterator; any container implementing `iter` and
+-- @param obj the iterator; any container implementing `next` and
 -- `reset` methods will suffice
 -- @return an iterator object.
 function Iterator:new(obj)
-  -- Check whether both iter and reset methods exist
-  assert(obj["iter"])
+  -- Check whether both next and reset methods exist
+  assert(obj["next"])
   assert(obj["reset"])
 
   self = {}
@@ -32,12 +32,12 @@ function Iterator:map(func)
   assert(func ~= nil)
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
 
   return function()
     if n ~= nil then
       m = n
-      n = self.obj:iter()()
+      n = self.obj:next()()
       return func(m)
     else
       return nil
@@ -53,13 +53,13 @@ function Iterator:filter(func)
 
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
 
   return function()
     ::redo::
     if n ~= nil then
       m = n
-      n = self.obj:iter()()
+      n = self.obj:next()()
       if func(m) then
         return m
       else
@@ -79,12 +79,12 @@ function Iterator:any(func)
 
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
 
   ::redo::
   if n ~= nil then
     m = n
-    n = self.obj:iter()()
+    n = self.obj:next()()
     if func(m) then
       return true
     else
@@ -104,7 +104,7 @@ function Iterator:all(func)
 
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
 
   if n == nil then
     return false
@@ -112,7 +112,7 @@ function Iterator:all(func)
 
   while n ~= nil do
     m = n
-    n = self.obj:iter()()
+    n = self.obj:next()()
 
     if not func(m) then
       return false
@@ -130,11 +130,11 @@ function Iterator:first(func)
 
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
 
   while n ~= nil do
     m = n
-    n = self.obj:iter()()
+    n = self.obj:next()()
 
     if func(m) then
       return m
@@ -154,13 +154,13 @@ function Iterator:max(func)
 
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
   local max = n
 
   ::redo::
   if n ~= nil then
     m = n
-    n = self.obj:iter()()
+    n = self.obj:next()()
     if n == nil then
       if func(m) > func(max) then
         return m
@@ -188,13 +188,13 @@ function Iterator:min(func)
 
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
   local min = n
 
   ::redo::
   if n ~= nil then
     m = n
-    n = self.obj:iter()()
+    n = self.obj:next()()
     if n == nil then
       if func(m) < func(min) then
         return m
@@ -219,13 +219,13 @@ function Iterator:reduce(func)
   assert(func ~= nil)
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
   local result = n
 
   ::redo::
   if n ~= nil then
     m = result
-    n = self.obj:iter()()
+    n = self.obj:next()()
     if n == nil then
       return result
     else
@@ -251,7 +251,7 @@ function Iterator:sort(func)
   local m = nil
   local heap = Heap:new(func)
 
-  for e in self.obj:iter() do
+  for e in self.obj:next() do
     heap:push(e)
   end
 
@@ -267,19 +267,19 @@ end
 function Iterator:zip(other)
   local m1 = nil
   self.obj:reset()
-  local n1 = self.obj:iter()()
+  local n1 = self.obj:next()()
 
   local m2 = nil
   other:reset()
-  local n2 = other:iter()()
+  local n2 = other:next()()
 
   return function()
     if n1 ~= nil and n2 ~= nil then
       m1 = n1
-      n1 = self.obj:iter()()
+      n1 = self.obj:next()()
 
       m2 = n2
-      n2 = other:iter()()
+      n2 = other:next()()
       return m1, m2
     else
       return nil, nil
@@ -292,12 +292,12 @@ end
 function Iterator:ipairs()
   local m = nil
   self.obj:reset()
-  local n = self.obj:iter()()
+  local n = self.obj:next()()
   local i = 0
 
   return function ()
     m = n
-    n = self.obj:iter()()
+    n = self.obj:next()()
     i = i + 1
     if n ~= nil then
       return i, m
