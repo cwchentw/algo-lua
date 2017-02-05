@@ -296,10 +296,10 @@ function Iterator:ipairs()
   local i = 0
 
   return function ()
-    m = n
-    n = self.obj:next()()
-    i = i + 1
     if n ~= nil then
+      m = n
+      n = self.obj:next()()
+      i = i + 1
       return i, m
     else
       return nil, nil
