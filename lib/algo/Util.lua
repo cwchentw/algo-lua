@@ -86,12 +86,26 @@ function Util:ffi_load(ffi, name)
 	local cpath = String:new(package.cpath)
 	cpath = cpath:gsub("?", name)
 
-
 	for path in cpath:split(";") do
 		if lfs.attributes(path:raw()) then
 			local out = ffi.load(path:raw())
 			if out then
 				return out
+			end
+		end
+	end
+
+  -- If on Mac, check .dylib as well.
+	local os_name, _ = self:get_os()
+	if os_name == "Mac" then
+		cpath = cpath:gsub(".so", ".dylib")
+
+		for path in cpath:split(";") do
+			if lfs.attributes(path:raw()) then
+				local out = ffi.load(path:raw())
+				if out then
+					return out
+				end
 			end
 		end
 	end
