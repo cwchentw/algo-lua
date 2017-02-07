@@ -9,6 +9,9 @@ Since Lua is a slow language compared with C/C++, you should not rely on
 this module for critical tasks.  In addition, the module is still in alpha
 stage; the API may change without warning.
 
+The package is built partially as a supplement for other libraries; don't
+expect full implementations for classic algorithms.
+
 Lua community is split by two major Lua implementations, official [Lua](https://www.lua.org/)
 and [LuaJIT](http://luajit.org/). Although LuaJIT is behind official Lua in
 language features, the former outperforms the latter by about 10x-50x.  Therefore,
