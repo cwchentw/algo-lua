@@ -6,9 +6,9 @@ do
   local array = Array:new(3)
   -- assert(#array == 3)
   assert(array:len() == 3)
-  assert(array[1] == 0)
-  assert(array[2] == 0)
-  assert(array[3] == 0)
+  assert(array:get(1) == 0)
+  assert(array:get(2) == 0)
+  assert(array:get(3) == 0)
 end
 
 -- Create an array from an array-style table
@@ -16,9 +16,9 @@ do
   -- Array: 1, 2, 3
   local array = Array:from_table({1, 2, 3})
   assert(array:len() == 3)
-  assert(array[1] == 1)
-  assert(array[2] == 2)
-  assert(array[3] == 3)
+  assert(array:get(1) == 1)
+  assert(array:get(2) == 2)
+  assert(array:get(3) == 3)
   assert(string.format("%s", array) == "(1, 2, 3)")
 end
 
@@ -46,13 +46,13 @@ do
 
   local i = 1
   for e in array:iter() do
-    array_1[i] = e
+    array_1:set(i, e)
     i = i + 1
   end
   assert(array_1:len() == 3)
-  assert(array_1[1] == 1)
-  assert(array_1[2] == 2)
-  assert(array_1[3] == 3)
+  assert(array_1:get(1) == 1)
+  assert(array_1:get(2) == 2)
+  assert(array_1:get(3) == 3)
 end
 
 -- Push elements into the array
@@ -63,20 +63,20 @@ do
   -- Array: 1
   array:push(1)
   assert(array:len() == 1)
-  assert(array[1] == 1)
+  assert(array:get(1) == 1)
 
   -- Array: 1, 2
   array:push(2)
   assert(array:len() == 2)
-  assert(array[1] == 1)
-  assert(array[2] == 2)
+  assert(array:get(1) == 1)
+  assert(array:get(2) == 2)
 
   -- Array: 1, 2, 3
   array:push(3)
   assert(array:len() == 3)
-  assert(array[1] == 1)
-  assert(array[2] == 2)
-  assert(array[3] == 3)
+  assert(array:get(1) == 1)
+  assert(array:get(2) == 2)
+  assert(array:get(3) == 3)
 end
 
 -- Pop elements from the array
@@ -109,7 +109,7 @@ do
   -- Array: 1
   array:unshift(1)
   assert(array:len() == 1)
-  assert(array[1] == 1)
+  assert(array:get(1) == 1)
 
   -- Array: 2, 1
   array:unshift(2)
@@ -152,10 +152,10 @@ do
   array:insert(1, 10)
   assert(string.format("%s", array) == "(10, 1, 2, 3)")
   -- assert(#array == 4)
-  assert(array[1] == 10)
-  assert(array[2] == 1)
-  assert(array[3] == 2)
-  assert(array[4] == 3)
+  assert(array:get(1) == 10)
+  assert(array:get(2) == 1)
+  assert(array:get(3) == 2)
+  assert(array:get(4) == 3)
 end
 
 -- Insert an element into the tail of the array
@@ -167,10 +167,10 @@ do
   array:insert(4, 10)
   assert(string.format("%s", array) == "(1, 2, 3, 10)")
   assert(array:len() == 4)
-  assert(array[1] == 1)
-  assert(array[2] == 2)
-  assert(array[3] == 3)
-  assert(array[4] == 10)
+  assert(array:get(1) == 1)
+  assert(array:get(2) == 2)
+  assert(array:get(3) == 3)
+  assert(array:get(4) == 10)
 end
 
 -- Insert an element into the middle of the array
@@ -182,8 +182,8 @@ do
   array:insert(2, 10)
   assert(string.format("%s", array) == "(1, 10, 2, 3)")
   assert(array:len() == 4)
-  assert(array[1] == 1)
-  assert(array[2] == 10)
-  assert(array[3] == 2)
-  assert(array[4] == 3)
+  assert(array:get(1) == 1)
+  assert(array:get(2) == 10)
+  assert(array:get(3) == 2)
+  assert(array:get(4) == 3)
 end

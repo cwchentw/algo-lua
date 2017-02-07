@@ -4,13 +4,8 @@
 local Array = {}
 package.loaded['Array'] = Array
 
-Array.__index = function (t, k)
-  if type(k) == "number" then
-    return t:get(k)
-  else
-    return rawget(Array, k)
-  end
-end
+-- We prefer OO method `get` over builtin indexing operator.
+Array.__index = Array
 
 Array.__newindex = function (t, k, v)
   if type(k) == "number" then

@@ -5,15 +5,8 @@
 local List = {}
 package.loaded['algo.List'] = List
 
---- Mimic internal indexing method in Lua.  Use OOP method call `get` is
--- preferred.
-List.__index = function(t, key)
-  if type(key) == "number" then
-    return t:get(key)
-  else
-    return rawget(List, key)
-  end
-end
+-- We prefer OO method `get` over builtin indexing operator.
+List.__index = List
 
 --- Check whether two lists are equal.
 List.__eq = function(o1, o2)
