@@ -7,6 +7,86 @@ package.loaded['algo.Time'] = Time
 
 Time.__index = Time
 
+local function _convert_time(d, h, m, s)
+  local _s = s
+  local _m = m
+  local _h = h
+  local _d = d
+
+  if _s < 0 then
+    repeat
+      _m = _m - 1
+      _s = _s + 60
+    until _s >= 0
+  elseif _s >= 60 then
+    repeat
+      _m = _m + 1
+      _s = _s - 60
+    until _s < 60
+  end
+
+  if _m < 0 then
+    repeat
+      _h = _h - 1
+      _m = _m + 60
+    until _m >= 0
+  elseif _m >= 60 then
+    repeat
+      _h = _h + 1
+      _m = _m - 60
+    until _m < 60
+  end
+
+  if _h < 0 then
+    repeat
+      _d = _d - 1
+      _h = _h + 24
+    until _h >= 0
+  elseif _h >= 24 then
+    repeat
+      _d = _d + 1
+      _h = _h - 24
+    until _h < 24
+  end
+
+  return _d, _h, _m, _s
+end
+
+Time.__unm = function (t)
+  assert(type(t) == "table" and t["day"] and t["hour"] and
+         t["minute"] and t["second"])
+  local d, h, m, s = _convert_time(-t:day(), -t:hour(), -t:minute(), -t:second())
+  return Time:new({day = d, hour = h, minute = m, second = s})
+end
+
+Time.__add = function (t1, t2)
+  assert(type(t1) == "table" and t1["day"] and t1["hour"] and
+         t1["minute"] and t1["second"])
+  assert(type(t2) == "table" and t2["day"] and t2["hour"] and
+         t2["minute"] and t2["second"])
+
+  local d, h, m, s = _convert_time(t1:day() + t2:day(),
+                                  t1:hour() + t2:hour(),
+                                  t1:minute() + t2:minute(),
+                                  t1:second() + t2:second())
+
+  return Time:new({day = d, hour = h, minute = m, second = s})
+end
+
+Time.__sub = function (t1, t2)
+  assert(type(t1) == "table" and t1["day"] and t1["hour"] and
+         t1["minute"] and t1["second"])
+  assert(type(t2) == "table" and t2["day"] and t2["hour"] and
+         t2["minute"] and t2["second"])
+
+  local d, h, m, s = _convert_time(t1:day() - t2:day(),
+                                   t1:hour() - t2:hour(),
+                                   t1:minute() - t2:minute(),
+                                   t1:second() - t2:second())
+
+  return Time:new({day = d, hour = h, minute = m, second = s})
+end
+
 local function _get_time(t)
   local _t = {}
   if t["day"] == nil then
@@ -70,10 +150,10 @@ end
 --- Create a new Time object.
 -- @param table A table present Time.  Available parameters includes:
 --
--- * day
--- * hour
--- * minute
--- * second
+-- * day: integer, it could be either positive or negative.
+-- * hour: 0 <= hour < 24, integer
+-- * minute: 0 <= minute < 60, integer
+-- * second: 0 <= second < 60, integer
 --
 -- @param option Optional.  A table present options. Available options includes:
 --
@@ -93,6 +173,7 @@ function Time:new(table, option)
   self = {}
   setmetatable(self, Time)
   self._day = _table["day"]
+  assert(self._day % 1 == 0)
 
   -- Internally, we use 24-clock to present hour.
   if _option["system"] == "12-clock" then
@@ -100,12 +181,12 @@ function Time:new(table, option)
   else
     self._hour = _table["hour"]
   end
+  assert(self._hour % 1 == 0 and 0 <= self._hour and self._hour < 24)
 
   self._minute = _table["minute"]
+  assert(self._minute % 1 == 0 and 0 <= self._minute and self._minute < 60)
   self._second = _table["second"]
-
-  -- Initially, all Time objects are positive.
-  self.sign = "+"
+  assert(self._second % 1 == 0 and 0 <= self._second and self._second < 60)
 
   -- Remember the clock system set by user
   self.system = _option["system"]
@@ -136,6 +217,10 @@ end
 -- @return second (number)
 function Time:second()
   return self._second
+end
+
+function Time:to_second()
+  return 86400 * self._day + 3600 * self._hour + 60 * self._minute + self._second
 end
 
 return Time
