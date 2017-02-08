@@ -59,6 +59,7 @@ Time.__unm = function (t)
   return Time:new({day = d, hour = h, minute = m, second = s})
 end
 
+--- Time addition.
 Time.__add = function (t1, t2)
   assert(type(t1) == "table" and t1["day"] and t1["hour"] and
          t1["minute"] and t1["second"])
@@ -73,6 +74,7 @@ Time.__add = function (t1, t2)
   return Time:new({day = d, hour = h, minute = m, second = s})
 end
 
+--- Time substration.
 Time.__sub = function (t1, t2)
   assert(type(t1) == "table" and t1["day"] and t1["hour"] and
          t1["minute"] and t1["second"])
@@ -158,7 +160,7 @@ end
 -- @param option Optional.  A table present options. Available options includes:
 --
 -- * system: either "12-clock" or "24-clock".  Default to 24-clock.
--- * period: either "a.m." or "p.m."  Mandatory when on "12-clock" system.
+-- * period: either "am" or "pm"  Mandatory when on "12-clock" system.
 --
 -- @return A Time object.
 function Time:new(table, option)
@@ -219,6 +221,9 @@ function Time:second()
   return self._second
 end
 
+--- Convert time object to seconds.
+-- You may use the return value with Lua standard date/time library.
+-- @return second (number)
 function Time:to_second()
   return 86400 * self._day + 3600 * self._hour + 60 * self._minute + self._second
 end

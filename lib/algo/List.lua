@@ -125,7 +125,8 @@ function List:next()
   end
 end
 
---- Iterator over the list.
+--- Iterate over the list.
+-- Alias to `next` method.
 -- @return An iterator over the list.
 function List:iter()
   return self:next()
