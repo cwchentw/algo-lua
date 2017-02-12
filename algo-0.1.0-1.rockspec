@@ -4,7 +4,7 @@ package = "algo"
 version = "0.1.0-1"
 
 source = {
-    url = "..."
+    url = "https://github.com/cwchentw/algo-lua"
 }
 
 description = {
@@ -13,19 +13,22 @@ description = {
     This library demostrates several common data structures and algorithms
     mostly in Lua.  Since Lua is a slow language compared to C/C++, you should
     not use this package for critical tasks.  In addition, the package is still
-     in alpha stage.  The API may change without warning.
+    in alpha stage.  The API may change without warning.
+
+    The package is built partially as a supplement for other libraries; don't
+    expect full implementations for all classic algorithms.
 
     Lua community is split to two major Lua implementations, official Lua and
     LuaJIT. Although LuaJIT is behind official Lua in language features, the
     former outperforms the latter by about 10x-50x.  Therefore, this library
-    targets mainly to LuaJIT
+    targets LuaJIT.
     ]],
-  homepage = "...",
+  homepage = "https://github.com/cwchentw/algo-lua",
   license = "MIT"
 }
 
 dependencies = {
-  "lua >= 5.1, < 5.2",
+  "lua >= 5.1, < 5.3",
   "luafilesystem",
   "luautf8",
 }
