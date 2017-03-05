@@ -79,3 +79,61 @@ do
   assert(d:minute() == 11)
   assert(d:second() == 20)
 end
+
+-- Positive DateTimeDuration object
+do
+  local d1 = DateTime:new({
+      year = 2017,
+      month = 3,
+      day = 6,
+      hour = 6,
+      minute = 49,
+      second = 50,
+    })
+  
+  local d2 = DateTime:new({
+      year = 2015,
+      month = 10,
+      day = 20,
+      hour = 18,
+      minute = 20,
+      second = 30,
+    })
+  
+  local duration = d1:diff(d2)
+  assert(duration:year() == 1)
+  assert(duration:month() == 4)
+  assert(duration:day() == 13)
+  assert(duration:hour() == 12)
+  assert(duration:minute() == 29)
+  assert(duration:second() == 20)
+end
+
+-- Negative DateTimeDuration object
+do
+  local d1 = DateTime:new({
+      year = 2015,
+      month = 10,
+      day = 20,
+      hour = 18,
+      minute = 20,
+      second = 30,
+    })
+  
+  local d2 = DateTime:new({
+      year = 2017,
+      month = 3,
+      day = 6,
+      hour = 6,
+      minute = 49,
+      second = 50,
+    })
+  
+  local duration = d1:diff(d2)
+  assert(duration:year() == -2)
+  assert(duration:month() == 7)
+  assert(duration:day() == 14)
+  assert(duration:hour() == 11)
+  assert(duration:minute() == 30)
+  assert(duration:second() == 40)
+end

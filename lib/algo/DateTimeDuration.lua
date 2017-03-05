@@ -1,5 +1,8 @@
 --- algo.DateTimeDuration class.
--- A class presents datetime duration.
+-- A class presents datetime duration.  We cannot directly calculate datetime on 
+-- DateTimeDuration objects because these objects don't contain the information about
+-- real datetime.  Instead, we calculate datetime by interacting with DateTime 
+-- objects, e.g. adding a DateTime object with a DateTimeDuration object.
 -- @classmod DateTimeDuration
 local DateTimeDuration = {}
 package.loaded['DateTimeDuration'] = DateTimeDuration
@@ -54,6 +57,17 @@ local function _get_datetime(table)
   return t
 end
 
+--- Create a new DateTimeDuration object.
+-- @param table A table presents datetime duration.  Available parameters includes:
+--
+-- * year
+-- * month
+-- * day
+-- * hour
+-- * minute
+-- * second
+--
+-- @return A DateTimeDuration object.
 function DateTimeDuration:new(table)
   local _table
   if table == nil then
@@ -74,26 +88,38 @@ function DateTimeDuration:new(table)
   return self
 end
 
+--- Get the year part of the DateTimeDuration object.
+-- @return year (number)
 function DateTimeDuration:year()
   return self._year
 end
 
+--- Get the month part of the DateTimeDuration object.
+-- @return month (number)
 function DateTimeDuration:month()
   return self._month
 end
 
+--- Get the day part of the DateTimeDuration object.
+-- @return day (number)
 function DateTimeDuration:day()
   return self._day
 end
 
+--- Get the hour part of the DateTimeDuration object.
+-- @return hour (number)
 function DateTimeDuration:hour()
   return self._hour
 end
 
+--- Get the minute part of the DateTimeDuration object.
+-- @return minute (number)
 function DateTimeDuration:minute()
   return self._minute
 end
 
+--- Get the second part of the DateTimeDuration object.
+-- @return second (number)
 function DateTimeDuration:second()
   return self._second
 end

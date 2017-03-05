@@ -4,6 +4,7 @@
 -- BCE (before the current era)/CE (current era) due to religious issues.  This class
 -- adopts both conventions.
 -- @classmod DateTime
+local DateTimeDuration = require("algo.DateTimeDuration")
 local DateTime = {}
 package.loaded['DateTime'] = DateTime
 
@@ -147,6 +148,10 @@ local function _get_utc_offset(tz)
   return hour, min
 end
 
+--- Add a DateTime object with a DateTimeDuration object
+-- @param a A DateTime object.
+-- @param b A DateTimeDuratioon object.
+-- @return A new DateTime object.
 DateTime.__add = function (a, b)
   assert(type(a) == "table")
   assert(type(b) == "table")
@@ -167,12 +172,29 @@ DateTime.__add = function (a, b)
   local y, mon, d, h, min, s, era = _convert_datetime(
     y_a, mon_a, d_a + d_b,
     h_a + h_b, min_a + min_b, s_a + s_b)
+  if era == "bce" then
+    y = -y
+  end
+  
   mon = mon + mon_b
-  while mon > 12 do
-    y = y + 1
-    mon = mon - 12
+  if mon > 0 then
+    while mon > 12 do
+      mon = mon - 12
+      y = y + 1
+    end
+  else
+    while mon < 1 do
+      mon = mon + 12
+      y = y - 1
+    end
   end
   y = y + y_b
+  if y < 0 then
+    era = "bce"
+    y = -y
+  else
+    era = "ce"
+  end
 
   local date = DateTime:new({
     year = y,
@@ -349,6 +371,84 @@ function DateTime:new(table, option)
   self._period = _option["period"]
   
   return self
+end
+
+function DateTime:diff(date)
+  local h_offset_a, m_offset_a = _get_utc_offset(self._tz)
+  local y_a, mon_a, d_a, h_a, min_a, s_a, era_a = _convert_datetime(
+    self._year, self._month, self._day,
+    self._hour + h_offset_a, self._minute + m_offset_a, self._second)
+
+  local h_offset_b, m_offset_b = _get_utc_offset(self._tz)
+  local y_b, mon_b, d_b, h_b, min_b, s_b, era_b = _convert_datetime(
+    date._year, date._month, date._day,
+    date._hour + h_offset_b, date._minute + m_offset_b, date._second)
+  
+  local year = 0
+  local month = 0
+  local day = 0
+  local hour = 0
+  local minute = 0
+  local second = 0
+  
+  second = second + s_a - s_b
+  while second < 0 do
+    minute = minute - 1
+    second = second + 60
+  end
+  
+  minute = minute + min_a - min_b
+  while minute < 0 do
+    hour = hour - 1
+    minute = minute + 60
+  end
+  
+  hour = hour + h_a - h_b
+  while hour < 0 do
+    day = day - 1
+    hour = hour + 24
+  end
+  
+  day = day + d_a - d_b
+  while true do
+    local n
+    if _is_leap_year(y_a) and (mon_a - 1) == 2 then
+      n = 29
+    else
+      n = days_by_month[mon_a - 1]
+    end
+    
+    if day < 0 then
+      month = month - 1
+      day = day + n
+    else
+      break
+    end
+    
+    while month < 0 do
+      year = year - 1
+      month = month + 12
+    end
+  end
+  
+  month = month + mon_a - mon_b
+  while month < 0 do
+    year = year - 1
+    month = month + 12
+  end
+  
+  year = year + y_a - y_b
+  
+  local duration = DateTimeDuration:new({
+      year = year,
+      month = month,
+      day = day,
+      hour = hour,
+      minute = minute,
+      second = second,
+    })
+  
+  return duration
 end
 
 --- Get the year of the DateTime object.
