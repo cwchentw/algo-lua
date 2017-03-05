@@ -28,5 +28,6 @@ algo.String = algo.String or require "algo.String"
 algo.UTF8String = algo.UTF8String or require "algo.UTF8String"
 algo.Time = algo.Time or require "algo.Time"
 algo.DateTime = algo.DateTime or require "algo.DateTime"
+algo.DateTimeDuration = algo.DateTimeDuration or require "algo.DateTimeDuration"
 
 return algo

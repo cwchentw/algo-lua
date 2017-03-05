@@ -9,11 +9,191 @@ package.loaded['DateTime'] = DateTime
 
 DateTime.__index = DateTime
 
+local days_by_month = {
+  31, 28, 31, 30, 31, 30,
+  31, 31, 30, 31, 30, 31,
+}
+
+local function _is_leap_year(y)
+  if y % 400 == 0 then
+    return true
+  elseif y % 100 == 0 then
+    return false
+  elseif y % 4 == 0 then
+    return true
+  else
+    return false
+  end
+end
+
+local function _convert_datetime(year, month, day, hour, minute, second)
+  local y = year
+  local mon = month - 1
+  local d = day - 1
+  local h = hour
+  local min = minute
+  local s = second
+  
+  if s > 0 then
+    while s > 59 do
+      min = min + 1
+      s = s - 60
+    end
+  elseif s < 0 then
+    while s < 0 do
+      min = min - 1
+      s = s + 60
+    end
+  end
+  
+  if min > 0 then
+    while min > 59 do
+      h = h + 1
+      min = min - 60
+    end
+  elseif min < 0 then
+    while min < 0 do
+      h = h - 1
+      min = min + 60
+    end
+  end
+  
+  if h > 0 then
+    while h > 23 do
+      d = d + 1
+      h = h - 24
+    end
+  elseif h < 0 then
+    while h < 0 do
+      d = d - 1
+      h = h + 24
+    end
+  end
+  
+  if d > 0 then
+    while true do
+      local n
+      if _is_leap_year(y) and mon == 2 then
+        n = 29
+      else
+        n = days_by_month[mon]
+      end
+
+      if d > n then
+        mon = mon + 1
+        d = d - n
+      else
+        break
+      end
+      
+      if mon > 12 then
+        y = y + 1
+        mon = mon - 12
+      end
+    end
+  elseif d < 0 then
+    while true do
+      local n
+      if _is_leap_year(y) and (mon - 1) == 2 then
+        n = 29
+      elseif (mon - 1) == 0 then
+        n = days_by_month[12]
+      else
+        n = days_by_month[mon - 1]
+      end
+      
+      if d - 1 < 0 then
+        mon = mon - 1
+        d = d + n
+      else
+        break
+      end
+    end
+  end
+  
+  if mon > 0 then
+    while mon > 11 do
+      y = y + 1
+      mon = mon - 12
+    end
+  elseif mon - 1 < 0 then
+    while mon < 0 do
+      y = y - 1
+      mon = mon + 12
+    end
+  end
+  
+  local era
+  if y < 0 then
+    era = "bce"
+    y = -y
+  else
+    era = "ce"
+  end
+  
+  return y, mon + 1, d + 1, h, min, s, era
+end
+
+local function _get_utc_offset(tz)
+  local str = {}
+  for i = 1, 5 do
+    str[i] = tz:sub(i, i)
+  end
+  
+  assert(str[1] == "+" or str[1] == "-")
+  
+  local hour = tonumber(str[2]) * 10 + tonumber(str[3])
+  local min = tonumber(str[4]) * 10 + tonumber(str[5])
+  return hour, min
+end
+
+DateTime.__add = function (a, b)
+  assert(type(a) == "table")
+  assert(type(b) == "table")
+  
+  -- Convert a to UTC datetime
+  local h_offset_a, m_offset_a = _get_utc_offset(a:tz())
+  local y_a, mon_a, d_a, h_a, min_a, s_a, era_a = _convert_datetime(
+    a._year, a._month, a._day, 
+    a._hour + h_offset_a, a._minute + m_offset_a, a._second)
+  if era_a == "bce" then
+    y_a = -y_a
+  end
+  
+  -- b is a datetime duration
+  local y_b, mon_b, d_b, h_b, min_b, s_b = 
+    b:year(), b:month(), b:day(), b:hour(), b:minute(), b:second()
+  
+  local y, mon, d, h, min, s, era = _convert_datetime(
+    y_a, mon_a, d_a + d_b,
+    h_a + h_b, min_a + min_b, s_a + s_b)
+  mon = mon + mon_b
+  while mon > 12 do
+    y = y + 1
+    mon = mon - 12
+  end
+  y = y + y_b
+
+  local date = DateTime:new({
+    year = y,
+    month = mon,
+    date = d,
+    hour = h,
+    minute = min,
+    second = s,
+  }, {
+    era = era,
+    tz = "+0000",
+  })
+
+  return date:conv_tz(a:tz())
+end
+
 local function _get_datetime(table)
   local t = {}
   
   if table["year"] == nil then
-    t["year"] = 1970
+    t["year"] = 0
   else
     t["year"] = table["year"]
   end
@@ -67,7 +247,7 @@ local function _get_option(option)
   end
   
   if option["tz"] == nil then
-    _option["tz"] = os.date("%z")
+    _option["tz"] = "+0000"
   else
     _option["tz"] = option["tz"]
   end
@@ -100,17 +280,7 @@ local function _convert_hour(h, p)
   return _h
 end
 
-local function _is_leap_year(y)
-  if y % 400 == 0 then
-    return true
-  elseif y % 100 == 0 then
-    return false
-  elseif y % 4 == 0 then
-    return true
-  else
-    return false
-  end
-end
+
 
 --- Create a new DateTime object.
 -- @param table A table present datetime.  Available parameters includes:
@@ -125,7 +295,7 @@ end
 -- @param option (Optional) A table presents options. Available options includes:
 --
 -- * era: either bc/bce or ac/ce.  Default to ac/ce.
--- * tz: in UTC format, e.g. +0800.  If not specified, it will assume local time.
+-- * tz: in UTC format, e.g. +0800.  If not specified, it will be UTC time.
 -- * system: either "12-clock" or "24-clock".  Default to 24-clock.
 -- * period: either "am" or "pm"  Mandatory when on "12-clock" system.
 --
@@ -146,18 +316,17 @@ function DateTime:new(table, option)
   assert(self._year % 1 == 0)
   
   self._month = _table["month"]
-  assert(self._month % 1 == 0 and 1 <= self._month and self._month <= 12)
+  assert(self._month % 1 == 0 and 0 <= self._month and self._month <= 12)
   
   self._day = _table["day"]
   assert(self._day % 1 == 0)
-  local days_by_month = {
-    31, 28, 31, 30, 31, 30,
-    31, 31, 30, 31, 30, 31,
-  }
+
   if _is_leap_year(self._year) and self._month == 2 then
-    assert(1 <= self._day and self._day <= 29)
+    assert(0 <= self._day and self._day <= 29)
+  elseif 1 <= self._month and self._month <= 12 then
+    assert(0 <= self._day and self._day <= days_by_month[self._month])
   else
-    assert(1 <= self._day and self._day <= days_by_month[self._month])
+    assert(0 <= self._day)
   end
   
   -- Internally, we use 24-clock to present hour.
@@ -183,39 +352,121 @@ function DateTime:new(table, option)
 end
 
 --- Get the year of the DateTime object.
+-- @param utc (Optional).  If true, return year in UTC.
 -- @return year (number)
-function DateTime:year()
-  return self._year
+function DateTime:year(utc)
+  if utc == nil or utc == false then
+    return self._year
+  end
+  
+  local h, m = _get_utc_offset(self._tz)
+  local y, mon, d, h_utc, min, s = _convert_datetime(
+    self._year, self._month, self._day,
+    self._hour + h, self._minute + m, self._second)
+  
+  return y
 end
 
 --- Get the month of the DateTime object.
+-- @param utc (Optional).  If true, return month in UTC.
 -- @return month (number, 1 <= month <= 12)
-function DateTime:month()
-  return self._month
+function DateTime:month(utc)
+  if utc == nil or utc == false then
+    return self._month
+  end
+  
+  local h, m = _get_utc_offset(self._tz)
+  local y, mon, d, h_utc, min, s = _convert_datetime(
+    self._year, self._month, self._day,
+    self._hour + h, self._minute + m, self._second)
+  
+  return mon
 end
 
 --- Get the day of the DateTime object.
+-- @param utc (Optional).  If true, return day in UTC.
 -- @return day (number, the range varies according to month)
-function DateTime:day()
-  return self._day
+function DateTime:day(utc)
+  if utc == nil or utc == false then
+    return self._day
+  end
+  
+  local h, m = _get_utc_offset(self._tz)
+  local y, mon, d, h_utc, min, s = _convert_datetime(
+    self._year, self._month, self._day,
+    self._hour + h, self._minute + m, self._second)
+  
+  return d
 end
 
 --- Get the hour of the DateTime object.
+-- @param utc (Optional).  If true, return hour in UTC.
 -- @return hour (number, 0 <= hour < 24)
-function DateTime:hour()
-  return self._hour
+function DateTime:hour(utc)
+  if utc == nil or utc == false then
+    return self._hour
+  end
+  
+  local h, m = _get_utc_offset(self._tz)
+  local y, mon, d, h_utc, min, s = _convert_datetime(
+    self._year, self._month, self._day,
+    self._hour + h, self._minute + m, self._second)
+  
+  return h_utc
 end
 
 --- Get the minute of the DateTime object.
+-- @param utc (Optional).  If true, return minute in UTC.
 -- @return minute (number, 0 <= minute < 60)
-function DateTime:minute()
-  return self._minute
+function DateTime:minute(utc)
+  if utc == nil or utc == false then
+    return self._minute
+  end
+  
+  local h, m = _get_utc_offset(self._tz)
+  local y, mon, d, h_utc, min, s = _convert_datetime(
+    self._year, self._month, self._day,
+    self._hour + h, self._minute + m, self._second)
+  
+  return min
 end
 
 --- Get the second of the DateTime object.
 -- @return second (number, 0 <= second < 60)
 function DateTime:second()
   return self._second
+end
+
+--- Get the era of the DateTime object.
+-- @return era (string, "bce" or "ce")
+function DateTime:era()
+  return self._era
+end
+
+--- Get the time zone of the DateTime object.
+-- @return time zone (string, e.g. "+0800")
+function DateTime:tz()
+  return self._tz
+end
+
+function DateTime:conv_tz(tz)
+  local h_orig, m_orig = _get_utc_offset(self._tz)
+  local h_new, m_new = _get_utc_offset(tz)
+  local y, mon, d, h, min, s, era = _convert_datetime(
+    self._year, self._month, self._day,
+    self._hour + h_orig + h_new, self._minute + m_orig + m_new, self._second)
+  local date = DateTime:new({
+      year = y,
+      month = mon, 
+      date = d,
+      hour = h,
+      minute = min,
+      second = s,
+    }, {
+      era = era,
+      tz = tz,
+    })
+  return date
 end
 
 return DateTime

@@ -15,6 +15,7 @@ file = {
   "lib/algo/UTF8String.lua",
   "lib/algo/Time.lua",
   "lib/algo/DateTime.lua",
+  "lib/algo/DateTimeDuration.lua",
 }
 
 project = "algo"

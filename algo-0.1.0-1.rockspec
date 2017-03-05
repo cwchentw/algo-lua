@@ -51,6 +51,7 @@ build = {
     ["algo.UTF8String"] = "lib/algo/UTF8String.lua",
     ["algo.Time"] = "lib/algo/Time.lua",
     ["algo.DateTime"] = "lib/algo/DateTime.lua",
+    ["algo.DateTimeDuration"] = "lib/algo/DateTimeDuration.lua",
     ["algo.Util"] = "lib/algo/Util.lua",
   }
 }
