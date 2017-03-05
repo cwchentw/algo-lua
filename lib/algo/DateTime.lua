@@ -5,6 +5,7 @@
 -- adopts both conventions.
 -- @classmod DateTime
 local DateTimeDuration = require("algo.DateTimeDuration")
+local LuaString = require("algo.LuaString")
 local DateTime = {}
 package.loaded['DateTime'] = DateTime
 
@@ -373,6 +374,39 @@ function DateTime:new(table, option)
   return self
 end
 
+--- Get a new DateTime object by current system time.
+-- @return A DateTime object.
+function DateTime:now()
+  local date_string = LuaString:new(os.date("%Y/%m/%d/%H/%M/%S"))
+  local t = {}
+  for s in date_string:split("/") do
+    table.insert(t, s)
+  end
+  
+  local year = tonumber(t[1]:raw())
+  local month = tonumber(t[2]:raw())
+  local day = tonumber(t[3]:raw())
+  local hour = tonumber(t[4]:raw())
+  local minute = tonumber(t[5]:raw())
+  local second = tonumber(t[6]:raw())
+  
+  local date = DateTime:new({
+      year = year,
+      month = month,
+      day = day,
+      hour = hour,
+      minute = minute,
+      second = second,
+    }, {
+      tz = os.date("%z")
+    })
+  
+  return date
+end
+
+--- Get the duration of two DateTime objects.
+-- @param date A DateTime object.
+-- @return A DateTimeDuration object.
 function DateTime:diff(date)
   local h_offset_a, m_offset_a = _get_utc_offset(self._tz)
   local y_a, mon_a, d_a, h_a, min_a, s_a, era_a = _convert_datetime(
@@ -549,6 +583,9 @@ function DateTime:tz()
   return self._tz
 end
 
+--- Convert the time zone of the DateTime object.
+-- @param tz The target time tone.
+-- @return A new DateTime object.
 function DateTime:conv_tz(tz)
   local h_orig, m_orig = _get_utc_offset(self._tz)
   local h_new, m_new = _get_utc_offset(tz)
