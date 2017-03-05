@@ -27,5 +27,6 @@ algo.NaiveBSTree = algo.NaiveBSTree or require "algo.NaiveBSTree"
 algo.String = algo.String or require "algo.String"
 algo.UTF8String = algo.UTF8String or require "algo.UTF8String"
 algo.Time = algo.Time or require "algo.Time"
+algo.DateTime = algo.DateTime or require "algo.DateTime"
 
 return algo

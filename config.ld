@@ -12,8 +12,9 @@ file = {
   "lib/algo/NaiveBSTree.lua",
   "lib/algo/String.lua",
   "lib/algo/LuaString.lua",
-  "lib/algo/Time.lua",
   "lib/algo/UTF8String.lua",
+  "lib/algo/Time.lua",
+  "lib/algo/DateTime.lua",
 }
 
 project = "algo"
