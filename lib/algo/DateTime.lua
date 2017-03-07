@@ -5,7 +5,6 @@
 -- adopts both conventions.
 -- @classmod DateTime
 local DateTimeDuration = require("algo.DateTimeDuration")
-local LuaString = require("algo.LuaString")
 local DateTime = {}
 package.loaded['DateTime'] = DateTime
 
@@ -35,7 +34,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
   local h = hour
   local min = minute
   local s = second
-  
+
   if s > 0 then
     while s > 59 do
       min = min + 1
@@ -47,7 +46,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       s = s + 60
     end
   end
-  
+
   if min > 0 then
     while min > 59 do
       h = h + 1
@@ -59,7 +58,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       min = min + 60
     end
   end
-  
+
   if h > 0 then
     while h > 23 do
       d = d + 1
@@ -71,7 +70,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       h = h + 24
     end
   end
-  
+
   if d > 0 then
     while true do
       local n
@@ -87,7 +86,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       else
         break
       end
-      
+
       if mon > 12 then
         y = y + 1
         mon = mon - 12
@@ -103,7 +102,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       else
         n = days_by_month[mon - 1]
       end
-      
+
       if d - 1 < 0 then
         mon = mon - 1
         d = d + n
@@ -112,7 +111,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       end
     end
   end
-  
+
   if mon > 0 then
     while mon > 11 do
       y = y + 1
@@ -124,7 +123,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       mon = mon + 12
     end
   end
-  
+
   local era
   if y < 0 then
     era = "bce"
@@ -132,7 +131,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
   else
     era = "ce"
   end
-  
+
   return y, mon + 1, d + 1, h, min, s, era
 end
 
@@ -141,9 +140,9 @@ local function _get_utc_offset(tz)
   for i = 1, 5 do
     str[i] = tz:sub(i, i)
   end
-  
+
   assert(str[1] == "+" or str[1] == "-")
-  
+
   local hour = tonumber(str[2]) * 10 + tonumber(str[3])
   local min = tonumber(str[4]) * 10 + tonumber(str[5])
   return hour, min
@@ -156,27 +155,27 @@ end
 DateTime.__add = function (a, b)
   assert(type(a) == "table")
   assert(type(b) == "table")
-  
+
   -- Convert a to UTC datetime
   local h_offset_a, m_offset_a = _get_utc_offset(a:tz())
   local y_a, mon_a, d_a, h_a, min_a, s_a, era_a = _convert_datetime(
-    a._year, a._month, a._day, 
+    a._year, a._month, a._day,
     a._hour + h_offset_a, a._minute + m_offset_a, a._second)
   if era_a == "bce" then
     y_a = -y_a
   end
-  
+
   -- b is a datetime duration
-  local y_b, mon_b, d_b, h_b, min_b, s_b = 
+  local y_b, mon_b, d_b, h_b, min_b, s_b =
     b:year(), b:month(), b:day(), b:hour(), b:minute(), b:second()
-  
+
   local y, mon, d, h, min, s, era = _convert_datetime(
     y_a, mon_a, d_a + d_b,
     h_a + h_b, min_a + min_b, s_a + s_b)
   if era == "bce" then
     y = -y
   end
-  
+
   mon = mon + mon_b
   if mon > 0 then
     while mon > 12 do
@@ -214,49 +213,49 @@ end
 
 local function _get_datetime(table)
   local t = {}
-  
+
   if table["year"] == nil then
     t["year"] = 0
   else
     t["year"] = table["year"]
   end
-  
+
   if table["month"] == nil then
     t["month"] = 1
   else
     t["month"] = table["month"]
   end
-  
+
   if table["day"] == nil then
     t["day"] = 1
   else
     t["day"] = table["day"]
   end
-  
+
   if table["hour"] == nil then
     t["hour"] = 0
   else
     t["hour"] = table["hour"]
   end
-  
+
   if table["minute"] == nil then
     t["minute"] = 0
   else
     t["minute"] = table["minute"]
   end
-  
+
   if table["second"] == nil then
     t["second"] = 0
   else
     t["second"] = table["second"]
   end
-  
+
   return t
 end
 
 local function _get_option(option)
   local _option = {}
-  
+
   if option["era"] == nil then
     _option["era"] = "ce"
   elseif option["era"] == "ac" then
@@ -268,25 +267,25 @@ local function _get_option(option)
   else
     error("Unknown era")
   end
-  
+
   if option["tz"] == nil then
     _option["tz"] = "+0000"
   else
     _option["tz"] = option["tz"]
   end
-  
+
   if option["system"] == nil then
     _option["system"] = "24-clock"
   else
     assert(option["system"] == "12-clock" or option["system"] == "24-clock")
     _option["system"] = option["system"]
   end
-  
+
   if _option["system"] == "12-clock" then
     assert(option["period"] == "am" or option["period"] == "pm")
     _option["period"] = option["period"]
   end
-  
+
   return _option
 end
 
@@ -331,16 +330,16 @@ function DateTime:new(table, option)
   else
     _option = _get_option(option)
   end
-  
+
   self = {}
   setmetatable(self, DateTime)
 
   self._year = _table["year"]
   assert(self._year % 1 == 0)
-  
+
   self._month = _table["month"]
   assert(self._month % 1 == 0 and 0 <= self._month and self._month <= 12)
-  
+
   self._day = _table["day"]
   assert(self._day % 1 == 0)
 
@@ -351,7 +350,7 @@ function DateTime:new(table, option)
   else
     assert(0 <= self._day)
   end
-  
+
   -- Internally, we use 24-clock to present hour.
   if _option["system"] == "12-clock" then
     self._hour = _convert_hour(_table["hour"], _option["period"])
@@ -359,37 +358,34 @@ function DateTime:new(table, option)
     self._hour = _table["hour"]
   end
   assert(self._hour % 1 == 0 and 0 <= self._hour and self._hour < 24)
-  
+
   self._minute = _table["minute"]
   assert(self._minute % 1 == 0 and 0 <= self._minute and self._minute < 60)
-  
+
   self._second = _table["second"]
   assert(self._second % 1 == 0 and 0 <= self._second and self._second < 60)
-  
+
   self._era = _option["era"]
   self._tz = _option["tz"]
   self._system = _option["system"]
   self._period = _option["period"]
-  
+
   return self
 end
 
 --- Get a new DateTime object by current system time.
 -- @return A DateTime object.
 function DateTime:now()
-  local date_string = LuaString:new(os.date("%Y/%m/%d/%H/%M/%S"))
+  local d = os.date("*t")
   local t = {}
-  for s in date_string:split("/") do
-    table.insert(t, s)
-  end
-  
-  local year = tonumber(t[1]:raw())
-  local month = tonumber(t[2]:raw())
-  local day = tonumber(t[3]:raw())
-  local hour = tonumber(t[4]:raw())
-  local minute = tonumber(t[5]:raw())
-  local second = tonumber(t[6]:raw())
-  
+
+  local year = d.year
+  local month = d.month
+  local day = d.day
+  local hour = d.hour
+  local minute = d.min
+  local second = d.sec
+
   local date = DateTime:new({
       year = year,
       month = month,
@@ -400,7 +396,7 @@ function DateTime:now()
     }, {
       tz = os.date("%z")
     })
-  
+
   return date
 end
 
@@ -417,32 +413,32 @@ function DateTime:diff(date)
   local y_b, mon_b, d_b, h_b, min_b, s_b, era_b = _convert_datetime(
     date._year, date._month, date._day,
     date._hour + h_offset_b, date._minute + m_offset_b, date._second)
-  
+
   local year = 0
   local month = 0
   local day = 0
   local hour = 0
   local minute = 0
   local second = 0
-  
+
   second = second + s_a - s_b
   while second < 0 do
     minute = minute - 1
     second = second + 60
   end
-  
+
   minute = minute + min_a - min_b
   while minute < 0 do
     hour = hour - 1
     minute = minute + 60
   end
-  
+
   hour = hour + h_a - h_b
   while hour < 0 do
     day = day - 1
     hour = hour + 24
   end
-  
+
   day = day + d_a - d_b
   while true do
     local n
@@ -451,28 +447,28 @@ function DateTime:diff(date)
     else
       n = days_by_month[mon_a - 1]
     end
-    
+
     if day < 0 then
       month = month - 1
       day = day + n
     else
       break
     end
-    
+
     while month < 0 do
       year = year - 1
       month = month + 12
     end
   end
-  
+
   month = month + mon_a - mon_b
   while month < 0 do
     year = year - 1
     month = month + 12
   end
-  
+
   year = year + y_a - y_b
-  
+
   local duration = DateTimeDuration:new({
       year = year,
       month = month,
@@ -481,7 +477,7 @@ function DateTime:diff(date)
       minute = minute,
       second = second,
     })
-  
+
   return duration
 end
 
@@ -492,12 +488,12 @@ function DateTime:year(utc)
   if utc == nil or utc == false then
     return self._year
   end
-  
+
   local h, m = _get_utc_offset(self._tz)
   local y, mon, d, h_utc, min, s = _convert_datetime(
     self._year, self._month, self._day,
     self._hour + h, self._minute + m, self._second)
-  
+
   return y
 end
 
@@ -508,12 +504,12 @@ function DateTime:month(utc)
   if utc == nil or utc == false then
     return self._month
   end
-  
+
   local h, m = _get_utc_offset(self._tz)
   local y, mon, d, h_utc, min, s = _convert_datetime(
     self._year, self._month, self._day,
     self._hour + h, self._minute + m, self._second)
-  
+
   return mon
 end
 
@@ -524,12 +520,12 @@ function DateTime:day(utc)
   if utc == nil or utc == false then
     return self._day
   end
-  
+
   local h, m = _get_utc_offset(self._tz)
   local y, mon, d, h_utc, min, s = _convert_datetime(
     self._year, self._month, self._day,
     self._hour + h, self._minute + m, self._second)
-  
+
   return d
 end
 
@@ -540,12 +536,12 @@ function DateTime:hour(utc)
   if utc == nil or utc == false then
     return self._hour
   end
-  
+
   local h, m = _get_utc_offset(self._tz)
   local y, mon, d, h_utc, min, s = _convert_datetime(
     self._year, self._month, self._day,
     self._hour + h, self._minute + m, self._second)
-  
+
   return h_utc
 end
 
@@ -556,12 +552,12 @@ function DateTime:minute(utc)
   if utc == nil or utc == false then
     return self._minute
   end
-  
+
   local h, m = _get_utc_offset(self._tz)
   local y, mon, d, h_utc, min, s = _convert_datetime(
     self._year, self._month, self._day,
     self._hour + h, self._minute + m, self._second)
-  
+
   return min
 end
 
@@ -594,7 +590,7 @@ function DateTime:conv_tz(tz)
     self._hour + h_orig + h_new, self._minute + m_orig + m_new, self._second)
   local date = DateTime:new({
       year = y,
-      month = mon, 
+      month = mon,
       date = d,
       hour = h,
       minute = min,
