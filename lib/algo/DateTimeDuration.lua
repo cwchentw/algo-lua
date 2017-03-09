@@ -124,4 +124,20 @@ function DateTimeDuration:second()
   return self._second
 end
 
+--- Convert DateTimeDuration to day.  Since DateTimeDuration doesn't contain real
+-- datetime info, the return value just an estimation.
+-- @return day (number)
+function DateTimeDuration:to_day()
+  local year2day = 365.242
+  local month2day = 30.44
+  local day2hour = 24
+  local day2min = day2hour * 60
+  local day2sec = day2min * 60
+  
+  local d = self:year() * year2day + self:month() * month2day + self:day() +
+    self:hour() / day2hour + self:minute() / day2min + self:second() / day2sec
+    
+  return d
+end
+
 return DateTimeDuration

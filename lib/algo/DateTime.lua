@@ -568,6 +568,7 @@ function DateTime:second()
 end
 
 --- Convert DateTime object to seconds since Unix epoch
+-- @return second (number)
 function DateTime:to_sec()
   local t = os.time({
       year = self:year(),
