@@ -567,6 +567,20 @@ function DateTime:second()
   return self._second
 end
 
+--- Convert DateTime object to seconds since Unix epoch
+function DateTime:to_sec()
+  local t = os.time({
+      year = self:year(),
+      month = self:month(),
+      day = self:day(),
+      hour = self:hour(),
+      min = self:minute(),
+      sec = self:second(),
+    })
+  
+  return t
+end
+
 --- Get the era of the DateTime object.
 -- @return era (string, "bce" or "ce")
 function DateTime:era()

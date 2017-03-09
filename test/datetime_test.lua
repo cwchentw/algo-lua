@@ -14,18 +14,21 @@ do
   assert(d:minute() == 34)
   assert(d:second() == 50)
   assert(d:era() == "ce")
+  assert(d:to_sec() == 1488688490)
 end
 
--- 1970/1/1 00:00:00 (Unix epoch time)
+-- 1970/1/1 00:08:00 (Unix epoch time)
 do
-  local d = DateTime:new({ year = 1970, }, {})
+  local d = DateTime:new({ year = 1970, hour = 8,}, {})
   assert(d:year() == 1970)
   assert(d:month() == 1)
   assert(d:day() == 1)
-  assert(d:hour() == 0)
+  assert(d:hour() == 8)
   assert(d:minute() == 0)
   assert(d:second() == 0)
   assert(d:era() == "ce")
+  print(d:to_sec())
+  assert(d:to_sec() == 0)
 end
 
 -- DateTime addition within minutes
