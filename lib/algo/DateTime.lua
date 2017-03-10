@@ -29,7 +29,7 @@ end
 
 local function _convert_datetime(year, month, day, hour, minute, second)
   local y = year
-  local mon = month - 1
+  local mon = month
   local d = day - 1
   local h = hour
   local min = minute
@@ -70,7 +70,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
       h = h + 24
     end
   end
-
+ 
   if d > 0 then
     while true do
       local n
@@ -80,7 +80,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
         n = days_by_month[mon]
       end
 
-      if d > n then
+      if d + 1 > n then
         mon = mon + 1
         d = d - n
       else
@@ -112,13 +112,13 @@ local function _convert_datetime(year, month, day, hour, minute, second)
     end
   end
 
-  if mon > 0 then
-    while mon > 11 do
+  if mon >= 1 then
+    while mon > 12 do
       y = y + 1
       mon = mon - 12
     end
-  elseif mon - 1 < 0 then
-    while mon < 0 do
+  elseif mon < 1 then
+    while mon < 1 do
       y = y - 1
       mon = mon + 12
     end
@@ -132,7 +132,7 @@ local function _convert_datetime(year, month, day, hour, minute, second)
     era = "ce"
   end
 
-  return y, mon + 1, d + 1, h, min, s, era
+  return y, mon, d + 1, h, min, s, era
 end
 
 local function _get_utc_offset(tz)
